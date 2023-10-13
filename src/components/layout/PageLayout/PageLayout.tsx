@@ -7,15 +7,17 @@ type Props = {
 
 export const PageLayout: FC<Props> = ({ children }) => {
   return (
-    <div className="relative bg-none sm:bg-[#15181B]">
+    <div className="relative bg-none flex flex-col min-h-screen">
       <Menu className="sm:mt-8" />
 
-      <div>
+      <div className="min-h-screen sm:min-h-max flex flex-col flex-grow">
         <Header className="sm:hidden" />
 
-        <div className="mb-[130px] sm:mb-0">{children}</div>
+        <div className="mb-[110px] pb-8 sm:pb-0 flex flex-col flex-grow sm:mb-0">
+          {children}
+        </div>
 
-        <div className="w-full py-5 border-t border-[rgba(255,255,255,0.20)] hidden sm:block overflow-hidden relative">
+        <div className="w-full py-5 border-t border-[rgba(255,255,255,0.20)] hidden sm:block overflow-hidden relative mt-auto">
           <svg
             className="absolute bottom-0 left-4"
             width="73"

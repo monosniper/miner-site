@@ -12,11 +12,11 @@
 }
 
 body {
-  @apply text-sm font-normal leading-none bg-[#15181B] overflow-x-hidden;
+  @apply text-sm font-normal leading-none bg-base-100-mob sm:bg-base-100 overflow-x-hidden text-white;
 }
 
 .container {
-  @apply max-w-[652px] w-full mx-auto px-1.5;
+  @apply max-w-[652px] w-full mx-auto px-5;
 }
 
 button,

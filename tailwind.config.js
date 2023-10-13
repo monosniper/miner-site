@@ -5,12 +5,15 @@ export default {
     extend: {
       colors: {
         "base-100": "#16191B",
+        "base-100-mob": "#15181B",
+        "base-200": "#1E1F25",
 
         "base-content-100": "rgba(223, 219, 221, 1)",
 
         "purple-1": "rgba(49, 16, 140, 1)",
 
         "gray-1": "#1E1F25",
+        "gray-2": "#DFDBDD",
 
         "base-border-100": "#444E54",
       },

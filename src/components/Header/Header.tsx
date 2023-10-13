@@ -8,7 +8,7 @@ export const Header: FC<PropsWithClassName> = ({ className }) => {
   const location = useLocation();
 
   return (
-    <header className={cn(className, "flex justify-between items-center p-4")}>
+    <header className={cn(className, "flex justify-between items-center py-4")}>
       <div className="flex items-center gap-2 text-[28px] font-semibold text-white [&>svg>path]:fill-[rgba(193,170,255,1)]">
         {titles[location.pathname].icon}
 
