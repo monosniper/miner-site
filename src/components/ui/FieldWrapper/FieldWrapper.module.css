@@ -9,3 +9,7 @@
 .error {
   @apply inline-block mt-1 text-red-500 text-xs;
 }
+
+.children {
+  @apply border border-base-border-100 rounded-lg overflow-hidden;
+}

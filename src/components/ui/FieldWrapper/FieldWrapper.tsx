@@ -18,7 +18,7 @@ export const FieldWrapper: FC<PropsWithClassName<Props>> = ({
   return (
     <div className={cn(className, styles.wrapper)}>
       <p className={styles.title}>{title}</p>
-      {children}
+      <div className={styles.children}>{children}</div>
 
       {error && <p className={styles.error}>{error}</p>}
     </div>
