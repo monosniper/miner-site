@@ -1,0 +1,19 @@
+.item {
+  @apply w-full flex-col sm:flex-row h-auto flex items-center gap-2 justify-center rounded-xl text-base-content-100 text-sm px-8 sm:h-9 py-2;
+}
+
+.item svg {
+  @apply w-10 h-10 sm:w-5 sm:h-5;
+}
+
+.item svg path {
+  @apply fill-[rgba(93,99,109,1)];
+}
+
+.item.isOpen {
+  @apply sm:bg-purple-1;
+}
+
+.item.isOpen svg path {
+  @apply fill-[rgba(208,192,252,1)];
+}
