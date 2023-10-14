@@ -1,4 +1,4 @@
-import { MinerPage, OptionsPage, WalletPage } from "@/pages";
+import { MinerPage, OptionsPage, ProPage, WalletPage } from "@/pages";
 import { Routes, Route } from "react-router-dom";
 
 export const useRouter = () => {
@@ -7,6 +7,7 @@ export const useRouter = () => {
       <Route path="/miner" element={<MinerPage />} />
       <Route path="/wallet" element={<WalletPage />} />
       <Route path="/options" element={<OptionsPage />} />
+      <Route path="/pro" element={<ProPage />} />
     </Routes>
   );
 };
