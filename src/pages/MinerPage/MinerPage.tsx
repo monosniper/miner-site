@@ -2,10 +2,10 @@ import { Coin } from "@/components";
 
 export const MinerPage = () => {
   return (
-    <div className="mb-[110px]">
-      <div className="container">
-        <div className="sm:pt-5">
-          <div>
+    <div className="mb-[110px] sm:mb-0">
+      <div className="sm:pt-5">
+        <div>
+          <div className="container">
             <div className="flex flex-wrap -m-2">
               <div className="w-full sm:w-1/2 p-2">
                 <Coin />
@@ -34,9 +34,11 @@ export const MinerPage = () => {
               <span>Start</span>
             </button>
           </div>
+        </div>
 
-          <div className="mt-5 sm:mt-8 bg-[#16191B] py-5 border-t border-base-border-100">
-            <div>
+        <div className="mt-5 sm:mt-8 bg-[#16191B] py-5 border-t border-base-border-100">
+          <div>
+            <div className="container">
               <div className="flex flex-wrap -m-2">
                 <div className="w-full sm:w-1/2 p-2">
                   <div className="bg-[#1E1F25] py-2 px-3 rounded-lg border border-[#444E54]">

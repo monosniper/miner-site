@@ -60,7 +60,7 @@ export const ProPage = () => {
           </p>
         </div>
 
-        <form className="flex flex-col flex-grow relative z-20 mt-6 mb-[106px] pb-5">
+        <form className="flex flex-col flex-grow relative z-20 mt-6 sm:mt-0 mb-[106px] pb-5">
           <div className="flex flex-col gap-6">
             <FieldWrapper title="Wallet">
               <TextField placeholder="Your wallet" />

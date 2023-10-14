@@ -10,7 +10,7 @@ export const PageLayout: FC<Props> = ({ children }) => {
   const location = useLocation();
 
   return (
-    <div className="relative bg-none flex flex-col min-h-screen">
+    <div className="relative flex flex-col min-h-screen bg-none">
       <Menu className="sm:mt-8" />
 
       <div className="min-h-screen sm:min-h-max flex flex-col flex-grow">
@@ -21,7 +21,7 @@ export const PageLayout: FC<Props> = ({ children }) => {
         </div>
 
         {location.pathname !== "/pro" && (
-          <div className="w-full border-t border-[rgba(255,255,255,0.20)] hidden sm:block overflow-hidden relative mt-auto">
+          <div className="w-full border-t border-[rgba(255,255,255,0.20)] hidden sm:block overflow-hidden relative">
             <div className="container relative py-5">
               <svg
                 className="absolute bottom-0 left-4"
