@@ -1,6 +1,22 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
+import { useWithdrawMutation } from "@/redux/api/walletApi";
+import { useForm } from "react-hook-form";
+
+type FormData = {
+  amount: string;
+  wallet: string;
+};
 
 export const WalletPage = () => {
+  const [withdraw, { isLoading, isSuccess, isError }] = useWithdrawMutation();
+  const methods = useForm<FormData>();
+
+  const formHandler = ({ amount, wallet }: FormData) => {
+    if (!amount || !wallet) return;
+
+    withdraw({ amount: Number(amount), wallet: Number(wallet) });
+  };
+
   return (
     <div className="flex flex-col flex-grow mt-4 sm:mt-5 mb-[110px]">
       <div className="container flex flex-col flex-grow">
@@ -16,19 +32,55 @@ export const WalletPage = () => {
             </p>
           </div>
 
-          <form className="flex flex-col mt-6 flex-grow">
+          <form
+            className="flex flex-col mt-6 flex-grow"
+            onSubmit={methods.handleSubmit(formHandler)}
+          >
             <div className="flex flex-col gap-6">
-              <FieldWrapper title="Amount">
-                <TextField placeholder="Amount" />
+              <FieldWrapper
+                title="Amount"
+                error={methods.formState.errors.amount?.message}
+              >
+                <TextField
+                  placeholder="Amount"
+                  type="number"
+                  methods={methods}
+                  registerName="amount"
+                  options={{
+                    required: {
+                      value: true,
+                      message: "Обязательно для заполнения",
+                    },
+                  }}
+                />
               </FieldWrapper>
 
-              <FieldWrapper title="Wallet">
-                <TextField placeholder="Your wallet" />
+              <FieldWrapper
+                title="Wallet"
+                error={methods.formState.errors.wallet?.message}
+              >
+                <TextField
+                  placeholder="Your wallet"
+                  type="number"
+                  methods={methods}
+                  registerName="wallet"
+                  options={{
+                    required: {
+                      value: true,
+                      message: "Обязательно для заполнения",
+                    },
+                  }}
+                />
               </FieldWrapper>
             </div>
 
             <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">
-              <Button className="!w-max bg-white" title="Withdraw" />
+              <Button
+                className="!w-max bg-white"
+                type="submit"
+                title={isSuccess || isError ? "Success!" : "Withdraw"}
+                disabled={isLoading}
+              />
             </div>
           </form>
         </div>

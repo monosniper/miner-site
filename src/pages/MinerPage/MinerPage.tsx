@@ -1,27 +1,77 @@
+import { useEffect, useState } from "react";
 import { Coin } from "@/components";
+import { coinsIcons } from "@/data/coinsIcons";
+
+const getCoinData = async (name: string) => {
+  const res = await fetch(
+    `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${name}/usd.json`,
+  );
+
+  const result = await res.json();
+
+  return result;
+};
+
+getCoinData("btc");
+
+const coinsFullNames: { [key: string]: string } = {
+  btc: "Bitcoin",
+  usdt: "Tether",
+  eth: "Ethereum",
+  doge: "Dogecoin",
+  ton: "Toncoin",
+};
 
 export const MinerPage = () => {
+  const [coins, setCoins] = useState<
+    {
+      date: string;
+      usd: number;
+      name: string;
+      fullName: string;
+      icon: JSX.Element;
+    }[]
+  >([]);
+  const [coinsNames] = useState(["btc", "usdt", "eth", "doge", "ton"]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const coinDataArray = await Promise.all(
+        coinsNames.map(async (coin) => {
+          const data = await getCoinData(coin);
+          return {
+            name: coin,
+            fullName: coinsFullNames[coin],
+            icon: coinsIcons[coin],
+            ...data,
+          };
+        }),
+      );
+
+      setCoins(coinDataArray);
+    };
+
+    fetchData();
+  }, [coinsNames]);
+
   return (
     <div className="mb-[110px] sm:mb-0">
       <div className="sm:pt-5">
         <div>
           <div className="container">
             <div className="flex flex-wrap -m-2">
-              <div className="w-full sm:w-1/2 p-2">
-                <Coin />
-              </div>
-              <div className="w-full sm:w-1/2 p-2">
-                <Coin />
-              </div>
-              <div className="w-full sm:w-1/2 p-2">
-                <Coin />
-              </div>
-              <div className="w-full sm:w-1/2 p-2">
-                <Coin />
-              </div>
-              <div className="w-full sm:w-1/2 p-2">
-                <Coin />
-              </div>
+              {coins.map((el, idx) => {
+                return (
+                  <div className="w-full sm:w-1/2 p-2" key={idx}>
+                    <Coin
+                      fullName={el.fullName}
+                      name={el.name}
+                      course={Number(el.usd.toFixed(2))}
+                      icon={el.icon}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             <button className="px-12 py-3 flex items-center gap-2 justify-center mx-auto mt-5 bg-white text-xl sm:text-base font-inter rounded-full text-black w-full sm:w-max">

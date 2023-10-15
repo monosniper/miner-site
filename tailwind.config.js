@@ -30,6 +30,8 @@ export default {
 
         "gradient-400":
           "radial-gradient(80.2% 87.63% at -7.8% 107.42%, #5B39B8 0%, rgba(0, 0, 0, 0.00) 100%), radial-gradient(62.64% 55.93% at 108% 82.47%, #5B39B8 0%, rgba(0, 0, 0, 0.00) 100%)",
+        "gradient-500":
+          "radial-gradient(186.4% 100% at 50% 100%, rgba(91, 57, 184, 0.20) 0%, rgba(0, 0, 0, 0.00) 100%)",
       },
 
       fontFamily: {

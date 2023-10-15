@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@/types";
+import { RootState, User } from "@/types";
 
 const initialState: {
   isAuth?: boolean;
+  userData?: User;
 } = {
   isAuth: false,
+  userData: undefined,
 };
 
 export const userSlice = createSlice({
@@ -14,11 +16,15 @@ export const userSlice = createSlice({
     setAuth: (state, action: PayloadAction<boolean>) => {
       state.isAuth = action.payload;
     },
+
+    setUserData: (state, action: PayloadAction<User>) => {
+      state.userData = action.payload;
+    },
   },
 });
 
 export default userSlice.reducer;
 
-export const { setAuth } = userSlice.actions;
+export const { setAuth, setUserData } = userSlice.actions;
 
 export const user = (state: RootState) => state.user;

@@ -1,28 +1,63 @@
-export const Coin = () => {
+import { coins, setSelectedCoins } from "@/redux/slices/coinsSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { FC, useState, useEffect } from "react";
+import cn from "clsx";
+
+type Props = {
+  icon: JSX.Element;
+  fullName: string;
+  name: string;
+  course: number;
+};
+
+export const Coin: FC<Props> = ({ icon, fullName, name, course }) => {
+  const dispatch = useAppDispatch();
+  const { selectedCoins } = useAppSelector(coins);
+  const [isSelected, setSelected] = useState(false);
+
+  const onClickHandler = () => {
+    const findCoin = selectedCoins.find((el) => el === name);
+
+    if (findCoin) {
+      dispatch(setSelectedCoins(selectedCoins.filter((el) => el !== name)));
+
+      return setSelected(false);
+    }
+
+    dispatch(setSelectedCoins([...selectedCoins, name]));
+  };
+
+  useEffect(() => {
+    if (!selectedCoins || selectedCoins.length === 0) return;
+
+    const findedCoin = selectedCoins.find((el) => el === name);
+
+    return setSelected(findedCoin ? true : false);
+  }, [name, selectedCoins]);
+
   return (
-    <div className="p-3 bg-[#1E1F25] flex items-center gap-4 w-full h-full border border-base-border-100 rounded-lg font-inter cursor-pointer">
+    <div
+      className={cn(
+        "p-3 bg-[#1E1F25] flex items-center gap-4 w-full h-full border border-base-border-100 rounded-lg font-inter cursor-pointer",
+        {
+          "border !border-[#5B39B8] bg-base-200 bg-gradient-500": isSelected,
+        },
+      )}
+      onClick={onClickHandler}
+    >
       <div className="min-w-[44px] w-11 h-11 rounded-lg flex justify-center items-center bg-[rgba(68,78,84,0.30)]">
-        <svg width="28" height="27" viewBox="0 0 28 27" fill="none">
-          <path
-            d="M26.8564 16.7764C25.0934 23.8479 17.9311 28.1515 10.8588 26.3881C3.78941 24.6251 -0.514161 17.4624 1.24957 10.3915C3.01175 3.31919 10.174 -0.984711 17.2442 0.778244C24.316 2.5412 28.6195 9.70457 26.8564 16.7764Z"
-            fill="#F7931A"
-          />
-          <path
-            d="M19.8734 11.7026C20.1361 9.94595 18.7987 9.00169 16.97 8.37178L17.5632 5.99227L16.1147 5.63134L15.5372 7.9482C15.1564 7.85323 14.7654 7.76374 14.3767 7.67502L14.9584 5.34287L13.5108 4.98194L12.9172 7.36068C12.6021 7.28893 12.2926 7.21802 11.9923 7.14331L11.994 7.13582L9.99653 6.63702L9.61122 8.18409C9.61122 8.18409 10.6859 8.43043 10.6632 8.44559C11.2498 8.59198 11.3558 8.98027 11.3382 9.28803L10.6624 11.9989C10.7028 12.0091 10.7552 12.024 10.813 12.0472C10.7647 12.0352 10.7133 12.0221 10.6599 12.0093L9.71271 15.8068C9.64103 15.985 9.45908 16.2524 9.04899 16.1509C9.0635 16.1719 7.99621 15.8881 7.99621 15.8881L7.27706 17.5462L9.16203 18.0161C9.51269 18.104 9.85633 18.196 10.1947 18.2826L9.59535 20.6894L11.0422 21.0503L11.6357 18.669C12.031 18.7763 12.4146 18.8753 12.7901 18.9686L12.1985 21.3386L13.647 21.6996L14.2464 19.2973C16.7163 19.7647 18.5736 19.5763 19.3553 17.3422C19.9852 15.5435 19.3239 14.506 18.0245 13.8294C18.9709 13.6112 19.6833 12.9885 19.8734 11.7026ZM16.5639 16.3433C16.1163 18.142 13.0878 17.1696 12.106 16.9258L12.9014 13.7372C13.8832 13.9823 17.0317 14.4674 16.5639 16.3433ZM17.0119 11.6765C16.6035 13.3126 14.0829 12.4814 13.2653 12.2776L13.9864 9.38572C14.8041 9.58954 17.4372 9.96995 17.0119 11.6765Z"
-            fill="white"
-          />
-        </svg>
+        {icon}
       </div>
 
       <div className="w-full flex flex-col gap-1">
-        <p className="text-[#B6BFCF] text-xs">Bitcoin, BTC</p>
+        <p className="text-[#B6BFCF] text-xs">{`${fullName}, ${name}`}</p>
 
         <div className="flex items-center justify-between gap-2">
           <p className="text-[rgba(223,219,221,1)] text-xl sm:text-lg font-medium">
-            $27,905.1
+            ${course}
           </p>
 
-          <div className="flex items-center gap-1 text-[#EB4141] font-medium text-base sm:text-lg">
+          {/* <div className="flex items-center gap-1 text-[#EB4141] font-medium text-base sm:text-lg">
             <p>0,15%</p>
 
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -31,7 +66,7 @@ export const Coin = () => {
                 fill="#EB4141"
               />
             </svg>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
