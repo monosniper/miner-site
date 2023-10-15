@@ -11,20 +11,13 @@ export const OptionsPage = () => {
       <div className="container flex flex-col flex-grow">
         <div className="hidden sm:flex flex-col">
           <h3 className="text-2xl font-semibold sm:text-center sm:text-3xl">
-            Withdraw
+            Options
           </h3>
-
-          <div className="p-4 bg-base-200/60 sm:bg-transparent sm:text-center sm:text-sm flex-col gap-4 text-xl font-inter mt-4 rounded-lg">
-            <p>Minimum withdraw amount — $100</p>
-            <p className="text-sm border-b border-white w-max sm:hidden">
-              Network TRC-20 (USDT)
-            </p>
-          </div>
         </div>
 
         {currentPage === 1 && (
           <form
-            className="flex flex-col flex-grow"
+            className="flex flex-col flex-grow sm:mt-6"
             onSubmit={(e) => {
               e.preventDefault();
 

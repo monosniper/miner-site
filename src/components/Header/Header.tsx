@@ -11,10 +11,14 @@ export const Header: FC<PropsWithClassName> = ({ className }) => {
     <div className="container">
       <header className={cn(className, "flex justify-between items-end py-4")}>
         <div className="flex items-center gap-2 text-[28px] font-semibold text-white [&>svg>path]:fill-[rgba(193,170,255,1)]">
-          {titles[location.pathname].icon}
+          {titles[location.pathname]?.icon
+            ? titles[location.pathname]?.icon
+            : null}
 
           <span className="max-w-[280px] w-full">
-            {titles[location.pathname].title}
+            {titles[location.pathname]?.title
+              ? titles[location.pathname]?.title
+              : null}
           </span>
         </div>
 

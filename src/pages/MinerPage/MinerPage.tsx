@@ -36,7 +36,7 @@ export const MinerPage = () => {
           </div>
         </div>
 
-        <div className="mt-5 sm:mt-8 bg-[#16191B] py-5 border-t border-base-border-100">
+        <div className="mt-5 sm:mt-8 bg-[#16191B] py-5 border-t border-base-border-100 max-w-[652px] mx-auto">
           <div>
             <div className="container">
               <div className="flex flex-wrap -m-2">
