@@ -1,8 +1,11 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
 import { useWithdrawMutation } from "@/redux/api/walletApi";
+import { user } from "@/redux/slices/userSlice";
+import { useAppSelector } from "@/redux/store";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 type FormData = {
   amount: string;
@@ -14,6 +17,7 @@ export const WalletPage = () => {
     useWithdrawMutation();
   const methods = useForm<FormData>();
   const navigate = useNavigate();
+  const { userData } = useAppSelector(user);
 
   const formHandler = ({ amount, wallet }: FormData) => {
     if (!amount || !wallet) return;
@@ -69,22 +73,25 @@ export const WalletPage = () => {
                 title="Wallet"
                 error={methods.formState.errors.wallet?.message}
               >
-                <TextField
-                  placeholder="Your wallet"
-                  type="number"
-                  methods={methods}
-                  registerName="wallet"
-                  options={{
-                    required: {
-                      value: true,
-                      message: "Обязательно для заполнения",
-                    },
-                  }}
-                />
+                <div className="w-full">
+                  <TextField
+                    placeholder="Your wallet"
+                    type="number"
+                    methods={methods}
+                    registerName="wallet"
+                    options={{
+                      required: {
+                        value: true,
+                        message: "Обязательно для заполнения",
+                      },
+                    }}
+                    disabled={true}
+                  />
+                </div>
               </FieldWrapper>
             </div>
 
-            <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">
+            <div className="mx-auto mt-10 sm:pt-0">
               <Button
                 className="!w-max bg-white"
                 type="submit"
@@ -93,6 +100,68 @@ export const WalletPage = () => {
               />
             </div>
           </form>
+        </div>
+
+        <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl">
+          Реферальная система
+        </h4>
+
+        <div className="flex items-center gap-6 w-full mt-8">
+          <FieldWrapper className="w-full" title="Ссылка для приглашения">
+            <TextField
+              value={
+                import.meta.env.VITE_LANDING_URL +
+                "?" +
+                (userData?.ref_code || "")
+              }
+              disabled={true}
+            />
+          </FieldWrapper>
+          <div
+            className="translate-y-3 cursor-pointer"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                import.meta.env.VITE_LANDING_URL +
+                  "?" +
+                  (userData?.ref_code || ""),
+              );
+
+              toast.success("Successfully copied!");
+            }}
+          >
+            <svg
+              className="w-10 h-10"
+              viewBox="0 -0.5 25 25"
+              fill="none"
+              stroke="#ffffff"
+            >
+              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                {" "}
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M17.676 14.248C17.676 15.8651 16.3651 17.176 14.748 17.176H7.428C5.81091 17.176 4.5 15.8651 4.5 14.248V6.928C4.5 5.31091 5.81091 4 7.428 4H14.748C16.3651 4 17.676 5.31091 17.676 6.928V14.248Z"
+                  stroke="#ffffff"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>{" "}
+                <path
+                  d="M10.252 20H17.572C19.1891 20 20.5 18.689 20.5 17.072V9.75195"
+                  stroke="#ffffff"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>{" "}
+              </g>
+            </svg>
+          </div>
         </div>
       </div>
     </div>

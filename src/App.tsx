@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { PageLayout } from "./components/layout";
 
+import "react-toastify/dist/ReactToastify.css";
+
 import { useRouter } from "./hooks/useRouter";
 import jwtDecode from "jwt-decode";
 import { User } from "./types";
@@ -9,6 +11,7 @@ import { setAuth, setUserData, user } from "./redux/slices/userSlice";
 import { checkToken } from "./utils";
 import { useNavigate } from "react-router-dom";
 import { useRefreshMutation } from "./redux/api/authApi";
+import { ToastContainer } from "react-toastify";
 
 interface tokenData extends User {
   exp: number;
@@ -113,6 +116,19 @@ const App = () => {
   return (
     <div>
       <PageLayout>{useRouter(isAuth)}</PageLayout>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={"dark"}
+      />
     </div>
   );
 };

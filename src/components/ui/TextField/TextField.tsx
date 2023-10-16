@@ -18,6 +18,7 @@ type Props<T extends FieldValues> = {
   onChange?: ChangeEventHandler<HTMLInputElement>;
   value?: string;
   error?: string;
+  disabled?: boolean;
 
   select?: {
     value: string | number;
@@ -36,6 +37,7 @@ export const TextField = <T extends FieldValues>({
   options,
   onChange,
   value,
+  disabled = false,
 
   select,
 }: PropsWithClassName<Props<T>>) => {
@@ -47,6 +49,7 @@ export const TextField = <T extends FieldValues>({
         placeholder={placeholder}
         onChange={onChange}
         value={value}
+        disabled={disabled}
         {...methods?.register(registerName!, options)}
       />
 

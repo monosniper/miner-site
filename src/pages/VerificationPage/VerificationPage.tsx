@@ -36,7 +36,9 @@ export const VerificationPage = () => {
         <form className="flex flex-col mt-6 flex-grow">
           <div className="flex flex-col gap-6">
             <FieldWrapper title="Wallet">
-              <TextField placeholder="Your wallet" />
+              <div className="w-full">
+                <TextField placeholder="Your wallet" disabled={true} />
+              </div>
             </FieldWrapper>
           </div>
 
