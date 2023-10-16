@@ -1,13 +1,16 @@
-import { Balance } from "@/types";
+import { User } from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const walletApi = createApi({
-  reducerPath: "walletApi",
+export const optionsApi = createApi({
+  reducerPath: "optionsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_API}/`,
   }),
   endpoints: ({ mutation }) => ({
-    withdraw: mutation<null, { amount: number; wallet: number }>({
+    putOptions: mutation<
+      User,
+      { network: string; wallet: string; transactionId: string }
+    >({
       query() {
         const token: {
           accessToken: string;
@@ -15,8 +18,8 @@ export const walletApi = createApi({
         } = JSON.parse(localStorage.getItem("tokens") || "{}").accessToken;
 
         return {
-          url: "withdraw",
-          method: "POST",
+          url: "options",
+          method: "PUT",
 
           headers: {
             Authorization: `Bearer ${token}`,
@@ -24,16 +27,7 @@ export const walletApi = createApi({
         };
       },
     }),
-
-    setBalance: mutation<any, Balance>({
-      query() {
-        return {
-          url: "balance",
-          method: "PUT",
-        };
-      },
-    }),
   }),
 });
 
-export const { useWithdrawMutation, useSetBalanceMutation } = walletApi;
+export const { usePutOptionsMutation } = optionsApi;

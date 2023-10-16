@@ -2,6 +2,7 @@ import { coins, setSelectedCoins } from "@/redux/slices/coinsSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { FC, useState, useEffect } from "react";
 import cn from "clsx";
+import { miner } from "@/redux/slices/minerSlice";
 
 type Props = {
   icon: JSX.Element;
@@ -14,8 +15,11 @@ export const Coin: FC<Props> = ({ icon, fullName, name, course }) => {
   const dispatch = useAppDispatch();
   const { selectedCoins } = useAppSelector(coins);
   const [isSelected, setSelected] = useState(false);
+  const { atWork } = useAppSelector(miner);
 
   const onClickHandler = () => {
+    if (atWork || name === "usdt") return;
+
     const findCoin = selectedCoins.find((el) => el === name);
 
     if (findCoin) {
@@ -41,6 +45,7 @@ export const Coin: FC<Props> = ({ icon, fullName, name, course }) => {
         "p-3 bg-[#1E1F25] flex items-center gap-4 w-full h-full border border-base-border-100 rounded-lg font-inter cursor-pointer",
         {
           "border !border-[#5B39B8] bg-base-200 bg-gradient-500": isSelected,
+          "cursor-not-allowed": atWork || name === "usdt",
         },
       )}
       onClick={onClickHandler}

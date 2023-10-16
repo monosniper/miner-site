@@ -2,10 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState, User } from "@/types";
 
 const initialState: {
-  isAuth?: boolean;
+  isAuth: boolean;
   userData?: User;
 } = {
-  isAuth: false,
+  isAuth: JSON.parse(localStorage.getItem("tokens") || "false") || false,
   userData: undefined,
 };
 

@@ -1,10 +1,33 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
-import { Radio } from "@/components/ui/Radio/Radio";
-import { useState } from "react";
+import { usePutOptionsMutation } from "@/redux/api/optionsApi";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+
+type FormData = {
+  network: string;
+  wallet: string;
+  transactionId: string;
+};
 
 export const OptionsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [putOptions, { isSuccess, isError }] = usePutOptionsMutation();
+  const methods = useForm<FormData>();
+
+  const formHandler = ({ network, wallet, transactionId }: FormData) => {
+    if (currentPage === 1) {
+      return setCurrentPage(2);
+    }
+
+    putOptions({ network, wallet, transactionId });
+  };
+
+  useEffect(() => {
+    if (!isError) return;
+
+    alert("Mistake. Repeat again");
+  }, [isError]);
 
   return (
     <div className="flex flex-col flex-grow mt-8 mb-[110px]">
@@ -18,18 +41,27 @@ export const OptionsPage = () => {
         {currentPage === 1 && (
           <form
             className="flex flex-col flex-grow sm:mt-6"
-            onSubmit={(e) => {
-              e.preventDefault();
-
-              setCurrentPage(2);
-            }}
+            onSubmit={methods.handleSubmit(formHandler)}
           >
             <div className="flex flex-col gap-6">
-              <FieldWrapper title="Network">
-                <TextField placeholder="Your network" />
+              <FieldWrapper
+                title="Network"
+                error={methods.formState.errors.network?.message}
+              >
+                <TextField
+                  placeholder="Your network"
+                  methods={methods}
+                  registerName="network"
+                  options={{
+                    required: {
+                      value: true,
+                      message: "Поле обязательно для заполнения",
+                    },
+                  }}
+                />
               </FieldWrapper>
 
-              <Radio
+              {/* <Radio
                 list={[
                   {
                     id: "network",
@@ -44,7 +76,7 @@ export const OptionsPage = () => {
                     label: "Start with MacOS",
                   },
                 ]}
-              />
+              /> */}
             </div>
 
             <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">
@@ -77,21 +109,50 @@ export const OptionsPage = () => {
               </p>
             </div>
 
-            <form className="flex flex-col mt-6 flex-grow">
+            <form
+              className="flex flex-col mt-6 flex-grow"
+              onSubmit={methods.handleSubmit(formHandler)}
+            >
               <div className="flex flex-col gap-6">
-                <FieldWrapper title="Wallet">
-                  <TextField placeholder="Your wallet" />
+                <FieldWrapper
+                  title="Wallet"
+                  error={methods.formState.errors.wallet?.message}
+                >
+                  <TextField
+                    placeholder="Your wallet"
+                    methods={methods}
+                    registerName="wallet"
+                    options={{
+                      required: {
+                        value: true,
+                        message: "Поле обязательно для заполнения",
+                      },
+                    }}
+                  />
                 </FieldWrapper>
 
-                <FieldWrapper title="Transaction ID">
-                  <TextField placeholder="ID of your transaction" />
+                <FieldWrapper
+                  title="Transaction ID"
+                  error={methods.formState.errors.transactionId?.message}
+                >
+                  <TextField
+                    placeholder="ID of your transaction"
+                    methods={methods}
+                    registerName="transactionId"
+                    options={{
+                      required: {
+                        value: true,
+                        message: "Поле обязательно для заполнения",
+                      },
+                    }}
+                  />
                 </FieldWrapper>
               </div>
 
               <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">
                 <Button
                   className="!w-max bg-white"
-                  title="Payed"
+                  title={isSuccess ? "Success!" : "Payed"}
                   type="submit"
                 />
               </div>

@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import { PageLayout } from "./components/layout";
 
 import { useRouter } from "./hooks/useRouter";
-import { socket } from "./socket";
 import jwtDecode from "jwt-decode";
 import { User } from "./types";
-import { useAppDispatch } from "./redux/store";
-import { setUserData } from "./redux/slices/userSlice";
+import { useAppDispatch, useAppSelector } from "./redux/store";
+import { setUserData, user } from "./redux/slices/userSlice";
 
 interface tokenData extends User {
   exp: number;
@@ -19,14 +18,7 @@ const App = () => {
   const accessToken = params.get("accessToken");
   const refreshToken = params.get("refreshToken");
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    socket.on("connect", () => console.log("connected!"));
-
-    return () => {
-      socket.off("connect");
-    };
-  }, []);
+  const { isAuth } = useAppSelector(user);
 
   useEffect(() => {
     if (!accessToken && !refreshToken) return;
@@ -54,12 +46,14 @@ const App = () => {
       username: decode.username,
     };
 
+    localStorage.setItem("token", decode.token);
+
     dispatch(setUserData(resData));
   }, [dispatch]);
 
   return (
     <div>
-      <PageLayout>{useRouter()}</PageLayout>
+      <PageLayout>{useRouter(isAuth)}</PageLayout>
     </div>
   );
 };

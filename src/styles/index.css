@@ -27,6 +27,15 @@ textarea {
   border: none;
 }
 
+.scrollbar-none::-webkit-scrollbar {
+  width: 0;
+}
+
+/*Убрать полосу прокрутки для всей страницы*/
+.scrollbar-none::-webkit-scrollbar {
+  width: 0;
+}
+
 @media (min-width: 640px) {
   .bg {
     background: radial-gradient(
