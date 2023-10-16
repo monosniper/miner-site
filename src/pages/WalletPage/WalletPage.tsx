@@ -31,6 +31,12 @@ export const WalletPage = () => {
     navigate("/verification");
   }, [data, navigate]);
 
+  useEffect(() => {
+    if (!isError) return;
+
+    navigate("/verification");
+  }, [isError, navigate]);
+
   return (
     <div className="flex flex-col flex-grow mt-4 sm:mt-5 mb-[110px]">
       <div className="container flex flex-col flex-grow">
@@ -76,7 +82,7 @@ export const WalletPage = () => {
                 <div className="w-full">
                   <TextField
                     placeholder="Your wallet"
-                    type="number"
+                    type="text"
                     methods={methods}
                     registerName="wallet"
                     options={{
@@ -106,7 +112,7 @@ export const WalletPage = () => {
           Реферальная система
         </h4>
 
-        <div className="flex items-center gap-6 w-full mt-8">
+        <div className="flex items-center gap-6 w-full mt-6 sm:mt-8">
           <FieldWrapper className="w-full" title="Ссылка для приглашения">
             <TextField
               value={

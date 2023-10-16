@@ -1,7 +1,25 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "@/redux/store";
+import { user } from "@/redux/slices/userSlice";
+import { useGetSettingsQuery } from "@/redux/api/walletApi";
+import { useEffect, useState } from "react";
 
 export const VerificationPage = () => {
+  const { wallet } = useAppSelector(user);
+  const { data: settingsData } = useGetSettingsQuery(null);
+  const [supportVal, setSupportVal] = useState<string>();
+
+  useEffect(() => {
+    if (!settingsData) return;
+
+    const support = settingsData.find((el) => el.key === "support");
+
+    if (!support) return;
+
+    setSupportVal(support.value);
+  }, [settingsData, supportVal]);
+
   return (
     <div className="flex flex-col flex-grow mt-8 mb-[110px]">
       <div className="container flex flex-col flex-grow">
@@ -37,13 +55,26 @@ export const VerificationPage = () => {
           <div className="flex flex-col gap-6">
             <FieldWrapper title="Wallet">
               <div className="w-full">
-                <TextField placeholder="Your wallet" disabled={true} />
+                <TextField
+                  placeholder="Your wallet"
+                  disabled={true}
+                  value={wallet || ""}
+                />
               </div>
             </FieldWrapper>
           </div>
 
           <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">
-            <Button className="!w-max bg-white" title={"Payed"} type="submit" />
+            <Button
+              className="!w-max bg-white"
+              title={"Payed"}
+              type="button"
+              onClick={() => {
+                if (supportVal) {
+                  window.open(`https://t.me/${supportVal}`);
+                }
+              }}
+            />
           </div>
         </form>
       </div>

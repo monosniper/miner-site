@@ -45,7 +45,7 @@ export const Coin: FC<Props> = ({ icon, fullName, name, course }) => {
         "p-3 bg-[#1E1F25] flex items-center gap-4 w-full h-full border border-base-border-100 rounded-lg font-inter cursor-pointer",
         {
           "border !border-[#5B39B8] bg-base-200 bg-gradient-500": isSelected,
-          "cursor-not-allowed": atWork || name === "usdt",
+          "cursor-not-allowed opacity-70": atWork || name === "usdt",
         },
       )}
       onClick={onClickHandler}

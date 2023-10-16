@@ -6,7 +6,7 @@ export const walletApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_API}/`,
   }),
-  endpoints: ({ mutation }) => ({
+  endpoints: ({ query, mutation }) => ({
     withdraw: mutation<
       { isSuccess: boolean },
       { amount: number; wallet: number }
@@ -45,7 +45,28 @@ export const walletApi = createApi({
         };
       },
     }),
+
+    getSettings: query<{ key: string; value: string }[], null>({
+      query() {
+        const token: {
+          accessToken: string;
+          refreshToken: string;
+        } = JSON.parse(localStorage.getItem("tokens") || "{}").accessToken;
+
+        return {
+          url: "settings",
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const { useWithdrawMutation, useSetBalanceMutation } = walletApi;
+export const {
+  useWithdrawMutation,
+  useSetBalanceMutation,
+  useGetSettingsQuery,
+} = walletApi;

@@ -1,50 +1,22 @@
 import { useEffect, useState, useRef } from "react";
 import { Coin } from "@/components";
-import { coinsIcons } from "@/data/coinsIcons";
 import socket from "../../socket";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { coins as coinsSlice } from "../../redux/slices/coinsSlice";
 import { miner, setUpdateData, setWork } from "@/redux/slices/minerSlice";
 import { setSumCoins, setUserData, user } from "@/redux/slices/userSlice";
 import { useSetBalanceMutation } from "@/redux/api/walletApi";
-
-const getCoinData = async (name: string) => {
-  const res = await fetch(
-    `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${name}/usd.json`,
-  );
-
-  const result = await res.json();
-
-  return result;
-};
-
-const coinsFullNames: { [key: string]: string } = {
-  btc: "Bitcoin",
-  usdt: "Tether",
-  eth: "Ethereum",
-  doge: "Dogecoin",
-  ton: "Toncoin",
-};
+import { coinsIcons } from "@/data/coinsIcons";
 
 export const MinerPage = () => {
-  const [coins, setCoins] = useState<
-    {
-      date: string;
-      usd: number;
-      name: string;
-      fullName: string;
-      icon: JSX.Element;
-    }[]
-  >([]);
-  const [coinsNames] = useState(["btc", "usdt", "eth", "doge", "ton"]);
+  const { coins } = useAppSelector(coinsSlice);
   const { selectedCoins } = useAppSelector(coinsSlice);
   const { atWork, updateData } = useAppSelector(miner);
   const checkedRef = useRef<HTMLDivElement>(null);
   const foundsRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
-  const { sumCoins, userData } = useAppSelector(user);
+  const { sumCoins, userData, totalBalance } = useAppSelector(user);
   const [loading, setLoading] = useState(false);
-
   const [setBalance, { data: balanceData }] = useSetBalanceMutation();
 
   useEffect(() => {
@@ -52,26 +24,6 @@ export const MinerPage = () => {
 
     dispatch(setUserData(balanceData));
   }, [balanceData, dispatch]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const coinDataArray = await Promise.all(
-        coinsNames.map(async (coin) => {
-          const data = await getCoinData(coin);
-          return {
-            name: coin,
-            fullName: coinsFullNames[coin],
-            icon: coinsIcons[coin],
-            ...data,
-          };
-        }),
-      );
-
-      setCoins(coinDataArray);
-    };
-
-    fetchData();
-  }, [coinsNames]);
 
   const startMiner = () => {
     if (selectedCoins.length > 0) {
@@ -158,21 +110,31 @@ export const MinerPage = () => {
     founds.forEach((el) => {
       const { name, amount } = el;
 
+      const currentCoin = coins.find(
+        (item) => name.toLowerCase() === item.name.toLowerCase(),
+      );
+
+      const coinAmount = currentCoin ? amount / currentCoin.usd : el.amount;
+
       if (sumCoins[name.toLowerCase()]) {
-        sumCoins[name.toLowerCase()] += amount;
+        sumCoins[name.toLowerCase()] += coinAmount;
       } else {
-        sumCoins[name.toLowerCase()] = amount;
+        sumCoins[name.toLowerCase()] = coinAmount;
       }
     });
 
     dispatch(setSumCoins(sumCoins));
-  }, [updateData, dispatch]);
+  }, [updateData, dispatch, coins]);
 
   return (
     <div className="mb-[110px] sm:mb-0">
       <div className="sm:pt-5">
         <div>
           <div className="container">
+            <div className="hidden sm:block mb-5 ml-auto w-max">
+              Balance, USDT - ${totalBalance}
+            </div>
+
             <div className="flex flex-wrap -m-2">
               {coins.map((el, idx) => {
                 return (
@@ -181,7 +143,7 @@ export const MinerPage = () => {
                       fullName={el.fullName}
                       name={el.name}
                       course={Number(el.usd.toFixed(2))}
-                      icon={el.icon}
+                      icon={coinsIcons[el.name]}
                     />
                   </div>
                 );

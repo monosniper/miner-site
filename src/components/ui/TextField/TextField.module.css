@@ -3,5 +3,5 @@
 }
 
 .input {
-  @apply w-full bg-transparent placeholder:text-gray-2/30 placeholder:font-medium text-white text-lg font-medium disabled:cursor-not-allowed;
+  @apply w-full bg-transparent placeholder:text-gray-2/30 placeholder:font-medium text-white text-lg font-medium disabled:cursor-not-allowed disabled:text-white/50;
 }

@@ -1,22 +1,42 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PageLayout } from "./components/layout";
 
 import "react-toastify/dist/ReactToastify.css";
 
 import { useRouter } from "./hooks/useRouter";
-import jwtDecode from "jwt-decode";
-import { User } from "./types";
 import { useAppDispatch, useAppSelector } from "./redux/store";
-import { setAuth, setUserData, user } from "./redux/slices/userSlice";
+import {
+  setAuth,
+  setTotalBalance,
+  setUserData,
+  setWallet,
+  user,
+} from "./redux/slices/userSlice";
 import { checkToken } from "./utils";
 import { useNavigate } from "react-router-dom";
-import { useRefreshMutation } from "./redux/api/authApi";
+import { useGetMeQuery, useRefreshMutation } from "./redux/api/authApi";
 import { ToastContainer } from "react-toastify";
+import { useGetSettingsQuery } from "./redux/api/walletApi";
+import { setCoins } from "./redux/slices/coinsSlice";
+import { coins as coinsSlice } from "./redux/slices/coinsSlice";
 
-interface tokenData extends User {
-  exp: number;
-  iat: number;
-}
+const getCoinData = async (name: string) => {
+  const res = await fetch(
+    `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${name}/usd.json`,
+  );
+
+  const result = await res.json();
+
+  return result;
+};
+
+const coinsFullNames: { [key: string]: string } = {
+  btc: "Bitcoin",
+  usdt: "Tether",
+  eth: "Ethereum",
+  doge: "Dogecoin",
+  ton: "Toncoin",
+};
 
 const App = () => {
   const params = new URLSearchParams(window.location.search);
@@ -24,10 +44,74 @@ const App = () => {
   const accessToken = params.get("accessToken");
   const refreshToken = params.get("refreshToken");
   const dispatch = useAppDispatch();
-  const { isAuth } = useAppSelector(user);
+  const { isAuth, userData } = useAppSelector(user);
+  const { coins } = useAppSelector(coinsSlice);
   const navigate = useNavigate();
   const [refresh, { isError: refreshIsError, data: refreshData }] =
     useRefreshMutation();
+  const { data: getMeData } = useGetMeQuery(null, {
+    skip: !isAuth,
+  });
+  const { data: settingsData } = useGetSettingsQuery(null, {
+    skip: !isAuth,
+  });
+  const [coinsNames] = useState(["btc", "usdt", "eth", "doge", "ton"]);
+
+  useEffect(() => {
+    if (!userData || !coins) return;
+
+    const { balance } = userData;
+
+    const sums = Object.entries(balance).map((el) => {
+      const currentCoinCourse = coins.find(
+        (item) => el[0].toLowerCase() === item.name.toLowerCase(),
+      );
+
+      if (!currentCoinCourse) return el;
+
+      const usdt = currentCoinCourse.usd * el[1];
+
+      return [el[0], usdt];
+    });
+
+    if (sums) {
+      const totalBalance = sums.reduce(
+        (prev, curr) => prev + Number(curr[1]),
+        0,
+      );
+
+      dispatch(setTotalBalance(totalBalance));
+    }
+  }, [coins, dispatch, userData]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const coinDataArray = await Promise.all(
+        coinsNames.map(async (coin) => {
+          const data = await getCoinData(coin);
+          return {
+            name: coin,
+            fullName: coinsFullNames[coin],
+            ...data,
+          };
+        }),
+      );
+
+      dispatch(setCoins(coinDataArray));
+    };
+
+    fetchData();
+  }, [coinsNames, dispatch]);
+
+  useEffect(() => {
+    if (!settingsData) return;
+
+    const wallet = settingsData.find((el) => el.key === "wallet");
+
+    if (!wallet) return;
+
+    dispatch(setWallet(wallet.value));
+  }, [dispatch, settingsData]);
 
   useEffect(() => {
     if (!refreshIsError) return;
@@ -89,36 +173,19 @@ const App = () => {
   }, [accessToken, refreshToken]);
 
   useEffect(() => {
-    const tokens: { accessToken: string; refreshToken: string } = JSON.parse(
-      localStorage.getItem("tokens") || "{}",
-    );
+    if (!getMeData) return;
 
-    if (!tokens.accessToken && !tokens.refreshToken) return;
+    localStorage.setItem("token", getMeData.token);
 
-    const decode: tokenData = jwtDecode(tokens.accessToken);
-
-    const resData = {
-      id: decode.id,
-      name: decode.name,
-      options: decode.options,
-      token: decode.token,
-      username: decode.username,
-      balance: decode.balance,
-      isPro: decode.isPro,
-      ref_code: decode.ref_code,
-    };
-
-    localStorage.setItem("token", decode.token);
-
-    dispatch(setUserData(resData));
-  }, [dispatch]);
+    dispatch(setUserData(getMeData));
+  }, [dispatch, getMeData]);
 
   return (
     <div>
       <PageLayout>{useRouter(isAuth)}</PageLayout>
 
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={2000}
         hideProgressBar={false}
         newestOnTop={false}

@@ -5,10 +5,14 @@ const initialState: {
   isAuth: boolean;
   userData?: User;
   sumCoins?: { [key: string]: number };
+  wallet?: string;
+  totalBalance?: number;
 } = {
   isAuth: JSON.parse(localStorage.getItem("tokens") || "false") || false,
   userData: undefined,
   sumCoins: undefined,
+  wallet: undefined,
+  totalBalance: undefined,
 };
 
 export const userSlice = createSlice({
@@ -29,11 +33,20 @@ export const userSlice = createSlice({
     ) => {
       state.sumCoins = action.payload;
     },
+
+    setWallet: (state, action: PayloadAction<string>) => {
+      state.wallet = action.payload;
+    },
+
+    setTotalBalance: (state, action: PayloadAction<number>) => {
+      state.totalBalance = action.payload;
+    },
   },
 });
 
 export default userSlice.reducer;
 
-export const { setAuth, setUserData, setSumCoins } = userSlice.actions;
+export const { setAuth, setUserData, setSumCoins, setWallet, setTotalBalance } =
+  userSlice.actions;
 
 export const user = (state: RootState) => state.user;

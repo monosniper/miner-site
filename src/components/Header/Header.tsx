@@ -1,4 +1,6 @@
 import { titles } from "@/data";
+import { user } from "@/redux/slices/userSlice";
+import { useAppSelector } from "@/redux/store";
 import { PropsWithClassName } from "@/types";
 import cn from "clsx";
 import { FC } from "react";
@@ -6,6 +8,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export const Header: FC<PropsWithClassName> = ({ className }) => {
   const location = useLocation();
+  const { totalBalance } = useAppSelector(user);
 
   return (
     <div className="container">
@@ -35,7 +38,9 @@ export const Header: FC<PropsWithClassName> = ({ className }) => {
           <div className="flex flex-col font-inter">
             <p className="text-[#B6BFCF] text-xs">Balance, USDT</p>
 
-            <p className="text-[#DFDBDD] text-xl font-semibold">$250,603.1</p>
+            <p className="text-[#DFDBDD] text-xl font-semibold">
+              ${totalBalance?.toFixed(3) || 0}
+            </p>
           </div>
         )}
       </header>
