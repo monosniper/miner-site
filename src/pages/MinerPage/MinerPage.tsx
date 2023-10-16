@@ -5,6 +5,8 @@ import socket from "../../socket";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { coins as coinsSlice } from "../../redux/slices/coinsSlice";
 import { miner, setUpdateData, setWork } from "@/redux/slices/minerSlice";
+import { setSumCoins, setUserData, user } from "@/redux/slices/userSlice";
+import { useSetBalanceMutation } from "@/redux/api/walletApi";
 
 const getCoinData = async (name: string) => {
   const res = await fetch(
@@ -40,6 +42,16 @@ export const MinerPage = () => {
   const checkedRef = useRef<HTMLDivElement>(null);
   const foundsRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
+  const { sumCoins, userData } = useAppSelector(user);
+  const [loading, setLoading] = useState(false);
+
+  const [setBalance, { data: balanceData }] = useSetBalanceMutation();
+
+  useEffect(() => {
+    if (!balanceData) return;
+
+    dispatch(setUserData(balanceData));
+  }, [balanceData, dispatch]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,25 +75,63 @@ export const MinerPage = () => {
 
   const startMiner = () => {
     if (selectedCoins.length > 0) {
+      setLoading(true);
+
       socket.emit("start", {
         data: selectedCoins,
       });
-
-      dispatch(setWork(true));
     }
   };
 
   const stopMiner = () => {
-    socket.emit("stop", null);
+    setLoading(true);
 
-    dispatch(setWork(false));
+    socket.emit("stop", null);
   };
+
+  useEffect(() => {
+    socket.on("stopped", () => {
+      dispatch(setWork(false));
+      setLoading(false);
+
+      if (!userData) return;
+      const balance = { ...userData.balance };
+
+      for (const coin in sumCoins) {
+        if (balance[coin]) {
+          balance[coin] += sumCoins[coin];
+        } else {
+          balance[coin] = sumCoins[coin];
+        }
+      }
+
+      setBalance(balance);
+    });
+
+    return () => {
+      socket.off("stopped");
+    };
+  }, [dispatch, setBalance, sumCoins, userData]);
+
+  useEffect(() => {
+    socket.on("started", () => {
+      dispatch(setWork(true));
+      setLoading(false);
+    });
+
+    return () => {
+      socket.off("started");
+    };
+  }, [dispatch, sumCoins, userData]);
 
   useEffect(() => {
     socket.on("update", (data) => {
       dispatch(setUpdateData(data));
-      console.log(data);
     });
+
+    return () => {
+      socket.off("update");
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -95,6 +145,28 @@ export const MinerPage = () => {
 
     foundsRef.current.scrollTo(0, foundsRef.current.scrollHeight);
   }, [updateData]);
+
+  useEffect(() => {
+    if (!updateData) return;
+
+    const { founds } = updateData;
+
+    if (founds.length === 0) return;
+
+    const sumCoins: { [name: string]: number } = {};
+
+    founds.forEach((el) => {
+      const { name, amount } = el;
+
+      if (sumCoins[name.toLowerCase()]) {
+        sumCoins[name.toLowerCase()] += amount;
+      } else {
+        sumCoins[name.toLowerCase()] = amount;
+      }
+    });
+
+    dispatch(setSumCoins(sumCoins));
+  }, [updateData, dispatch]);
 
   return (
     <div className="mb-[110px] sm:mb-0">
@@ -118,8 +190,9 @@ export const MinerPage = () => {
 
             {!atWork ? (
               <button
-                className="px-12 py-3 flex items-center gap-2 justify-center mx-auto mt-5 bg-white text-xl sm:text-base font-inter rounded-full text-black w-full sm:w-max"
+                className="disabled:opacity-60 ease-linear duration-200 px-12 py-3 flex items-center gap-2 justify-center mx-auto mt-5 bg-white text-xl sm:text-base font-inter rounded-full text-black w-full sm:w-max"
                 onClick={startMiner}
+                disabled={loading}
               >
                 <svg width="21" height="20" viewBox="0 0 21 20" fill="none">
                   <path
@@ -131,8 +204,9 @@ export const MinerPage = () => {
               </button>
             ) : (
               <button
-                className="px-12 py-3 flex items-center gap-2 justify-center mx-auto mt-5 bg-white text-xl sm:text-base font-inter rounded-full text-black w-full sm:w-max"
+                className="disabled:opacity-60 ease-linear duration-200 px-12 py-3 flex items-center gap-2 justify-center mx-auto mt-5 bg-white text-xl sm:text-base font-inter rounded-full text-black w-full sm:w-max"
                 onClick={stopMiner}
+                disabled={loading}
               >
                 <div className="w-2 h-2 rounded-sm bg-black"></div>
                 <span>Stop</span>
@@ -166,7 +240,9 @@ export const MinerPage = () => {
                             key={idx}
                             className="flex gap-3 text-sm sm:text-xs"
                           >
-                            <p className="text-[rgba(88,102,126,1)]">el.name</p>
+                            <p className="text-[rgba(88,102,126,1)]">
+                              {el.name}
+                            </p>
 
                             <p className="text-[rgba(229,233,235,1)] truncate">
                               {splitText[0]}:{" "}

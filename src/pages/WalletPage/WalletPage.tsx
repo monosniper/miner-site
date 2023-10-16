@@ -1,6 +1,8 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
 import { useWithdrawMutation } from "@/redux/api/walletApi";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
   amount: string;
@@ -8,14 +10,22 @@ type FormData = {
 };
 
 export const WalletPage = () => {
-  const [withdraw, { isLoading, isSuccess, isError }] = useWithdrawMutation();
+  const [withdraw, { isLoading, data, isSuccess, isError }] =
+    useWithdrawMutation();
   const methods = useForm<FormData>();
+  const navigate = useNavigate();
 
   const formHandler = ({ amount, wallet }: FormData) => {
     if (!amount || !wallet) return;
 
     withdraw({ amount: Number(amount), wallet: Number(wallet) });
   };
+
+  useEffect(() => {
+    if (!data) return;
+
+    navigate("/verification");
+  }, [data, navigate]);
 
   return (
     <div className="flex flex-col flex-grow mt-4 sm:mt-5 mb-[110px]">

@@ -1,20 +1,27 @@
+import { User } from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+interface RefreshRes extends User {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_API}/`,
   }),
-  endpoints: ({ query }) => ({
-    refresh: query<{ accessToken: string }, { refreshToken: string }>({
-      query() {
+  endpoints: ({ mutation }) => ({
+    refresh: mutation<RefreshRes, { refreshToken: string }>({
+      query(body) {
         return {
           url: "refresh",
-          method: "GET",
+          method: "POST",
+          body,
         };
       },
     }),
   }),
 });
 
-export const { useRefreshQuery } = authApi;
+export const { useRefreshMutation } = authApi;

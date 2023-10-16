@@ -7,11 +7,8 @@ export const optionsApi = createApi({
     baseUrl: `${import.meta.env.VITE_API}/`,
   }),
   endpoints: ({ mutation }) => ({
-    putOptions: mutation<
-      User,
-      { network: string; wallet: string; transactionId: string }
-    >({
-      query() {
+    putOptions: mutation<User, { network: string }>({
+      query(body) {
         const token: {
           accessToken: string;
           refreshToken: string;
@@ -20,6 +17,7 @@ export const optionsApi = createApi({
         return {
           url: "options",
           method: "PUT",
+          body,
 
           headers: {
             Authorization: `Bearer ${token}`,

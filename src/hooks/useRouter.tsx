@@ -2,9 +2,14 @@ import { Suspense } from "react";
 import { lazily } from "react-lazily";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-const { MinerPage, WalletPage, OptionsPage, ProPage, EmptyPage } = lazily(
-  () => import("@/pages"),
-);
+const {
+  MinerPage,
+  WalletPage,
+  OptionsPage,
+  ProPage,
+  EmptyPage,
+  VerificationPage,
+} = lazily(() => import("@/pages"));
 
 export const useRouter = (isAuth: boolean) => {
   return (
@@ -58,6 +63,15 @@ export const useRouter = (isAuth: boolean) => {
             element={
               <Suspense>
                 <ProPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/verification"
+            element={
+              <Suspense>
+                <VerificationPage />
               </Suspense>
             }
           />

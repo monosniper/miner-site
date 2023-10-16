@@ -65,10 +65,6 @@ export const ProPage = () => {
             <FieldWrapper title="Wallet">
               <TextField placeholder="Your wallet" />
             </FieldWrapper>
-
-            <FieldWrapper title="Transaction ID">
-              <TextField placeholder="ID of your transaction" />
-            </FieldWrapper>
           </div>
 
           <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">

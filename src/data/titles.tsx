@@ -20,4 +20,8 @@ export const titles: { [key: string]: { title: string; icon?: JSX.Element } } =
     "/pro": {
       title: "Buy PRO Network for max wage",
     },
+
+    "/verification": {
+      title: "Verification",
+    },
   };
