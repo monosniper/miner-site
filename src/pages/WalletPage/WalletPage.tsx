@@ -117,7 +117,7 @@ export const WalletPage = () => {
             <TextField
               value={
                 import.meta.env.VITE_LANDING_URL +
-                "?" +
+                "?ref_code=" +
                 (userData?.ref_code || "")
               }
               disabled={true}
@@ -126,13 +126,15 @@ export const WalletPage = () => {
           <div
             className="translate-y-3 cursor-pointer"
             onClick={() => {
-              navigator.clipboard.writeText(
-                import.meta.env.VITE_LANDING_URL +
-                  "?" +
-                  (userData?.ref_code || ""),
-              );
+              if (userData) {
+                navigator.clipboard.writeText(
+                  import.meta.env.VITE_LANDING_URL +
+                    "?ref_code=" +
+                    (userData.ref_code || ""),
+                );
 
-              toast.success("Successfully copied!");
+                toast.success("Successfully copied!");
+              }
             }}
           >
             <svg
