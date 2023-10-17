@@ -21,7 +21,6 @@ import { setCoins } from "./redux/slices/coinsSlice";
 import { coins as coinsSlice } from "./redux/slices/coinsSlice";
 import socket from "./socket";
 import { setWork } from "./redux/slices/minerSlice";
-import { toast } from "react-toastify";
 
 const coinsFullNames: { [key: string]: string } = {
   btc: "Bitcoin",
@@ -62,12 +61,6 @@ const App = () => {
       window.removeEventListener("visibilitychange", stopMiner);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    socket.on("stopped", () => {
-      toast.error("The miner stopped because you changed the tab");
-    });
   }, []);
 
   useEffect(() => {
