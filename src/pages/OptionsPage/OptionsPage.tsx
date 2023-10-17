@@ -18,7 +18,7 @@ export const OptionsPage = () => {
   const dispatch = useAppDispatch();
   const { userData } = useAppSelector(user);
   const [isMonoIp, setMonoIp] = useState<boolean>(
-    userData?.options.mono_ip || false,
+    userData?.options.mono_ip || false
   );
 
   const formHandler = ({ network, mono_ip }: FormData) => {
@@ -46,14 +46,11 @@ export const OptionsPage = () => {
 
     if (userData.options.mono_ip !== undefined) {
       methods.setValue("mono_ip", userData.options.mono_ip);
+      setMonoIp(userData.options.mono_ip);
     }
   }, [methods, userData]);
 
-  useEffect(() => {
-    if (!userData) return;
-
-    setMonoIp(userData.options.mono_ip!);
-  }, [userData]);
+  console.log(isMonoIp);
 
   return (
     <div className="flex flex-col flex-grow mt-8 mb-[110px]">
@@ -85,15 +82,15 @@ export const OptionsPage = () => {
                 }}
               />
             </FieldWrapper>
-            {/* 
+
             <Checkbox
               label="Use mono IP"
               id="useMonoIP"
               isCheckedVal={isMonoIp}
-              onChange={(value) => {
-                setMonoIp(value);
+              onChange={() => {
+                setMonoIp((prev) => !prev);
               }}
-            /> */}
+            />
           </div>
 
           <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">

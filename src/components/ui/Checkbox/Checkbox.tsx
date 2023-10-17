@@ -7,7 +7,6 @@ type Props = {
   isCheckedVal: boolean;
   label: string;
   id: string;
-  value: string;
 };
 
 export const Checkbox: FC<Props> = ({ onChange, label, isCheckedVal, id }) => {
