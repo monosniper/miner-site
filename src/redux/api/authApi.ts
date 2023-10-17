@@ -1,9 +1,11 @@
 import { User } from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-interface RefreshRes extends User {
+interface RefreshRes {
   accessToken: string;
   refreshToken: string;
+
+  user: User;
 }
 
 export const authApi = createApi({

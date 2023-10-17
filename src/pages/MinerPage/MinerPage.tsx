@@ -7,6 +7,7 @@ import { miner, setUpdateData, setWork } from "@/redux/slices/minerSlice";
 import { setSumCoins, setUserData, user } from "@/redux/slices/userSlice";
 import { useSetBalanceMutation } from "@/redux/api/walletApi";
 import { coinsIcons } from "@/data/coinsIcons";
+import { toast } from "react-toastify";
 
 export const MinerPage = () => {
   const { coins } = useAppSelector(coinsSlice);
@@ -32,6 +33,8 @@ export const MinerPage = () => {
       socket.emit("start", {
         data: selectedCoins,
       });
+    } else {
+      toast.error("Select at least one coin");
     }
   };
 
@@ -132,22 +135,24 @@ export const MinerPage = () => {
         <div>
           <div className="container">
             <div className="hidden sm:block mb-5 ml-auto w-max">
-              Balance, USDT - ${totalBalance}
+              Balance, USDT - ${totalBalance || 0}
             </div>
 
             <div className="flex flex-wrap -m-2">
-              {coins.map((el, idx) => {
-                return (
-                  <div className="w-full sm:w-1/2 p-2" key={idx}>
-                    <Coin
-                      fullName={el.fullName}
-                      name={el.name}
-                      course={Number(el.usd.toFixed(2))}
-                      icon={coinsIcons[el.name]}
-                    />
-                  </div>
-                );
-              })}
+              {coins
+                .filter((el) => el.name !== "usdt")
+                .map((el, idx) => {
+                  return (
+                    <div className="w-full sm:w-1/2 p-2" key={idx}>
+                      <Coin
+                        fullName={el.fullName}
+                        name={el.name}
+                        course={Number(el.usd.toFixed(2))}
+                        icon={coinsIcons[el.name]}
+                      />
+                    </div>
+                  );
+                })}
             </div>
 
             {!atWork ? (
@@ -156,13 +161,15 @@ export const MinerPage = () => {
                 onClick={startMiner}
                 disabled={loading}
               >
-                <svg width="21" height="20" viewBox="0 0 21 20" fill="none">
-                  <path
-                    d="M14.7665 7.83329L8.73316 4.34996C7.96069 3.90397 7.00913 3.90333 6.23606 4.34827C5.463 4.79321 4.98555 5.61633 4.98315 6.50829V13.4916C4.98555 14.3836 5.463 15.2067 6.23606 15.6516C7.00913 16.0966 7.96069 16.0959 8.73316 15.65L14.7665 12.1666C15.5416 11.7205 16.0193 10.8943 16.0193 9.99996C16.0193 9.10565 15.5416 8.27945 14.7665 7.83329Z"
-                    fill="black"
-                  />
-                </svg>
-                <span>Start</span>
+                {!loading && (
+                  <svg width="21" height="20" viewBox="0 0 21 20" fill="none">
+                    <path
+                      d="M14.7665 7.83329L8.73316 4.34996C7.96069 3.90397 7.00913 3.90333 6.23606 4.34827C5.463 4.79321 4.98555 5.61633 4.98315 6.50829V13.4916C4.98555 14.3836 5.463 15.2067 6.23606 15.6516C7.00913 16.0966 7.96069 16.0959 8.73316 15.65L14.7665 12.1666C15.5416 11.7205 16.0193 10.8943 16.0193 9.99996C16.0193 9.10565 15.5416 8.27945 14.7665 7.83329Z"
+                      fill="black"
+                    />
+                  </svg>
+                )}
+                <span>{loading ? "Loading..." : "Start"}</span>
               </button>
             ) : (
               <button
@@ -171,7 +178,7 @@ export const MinerPage = () => {
                 disabled={loading}
               >
                 <div className="w-2 h-2 rounded-sm bg-black"></div>
-                <span>Stop</span>
+                <span>{loading ? "Loading..." : "Stop"}</span>
               </button>
             )}
           </div>

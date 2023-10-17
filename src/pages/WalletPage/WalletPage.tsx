@@ -115,7 +115,7 @@ export const WalletPage = () => {
           </form>
         </div>
 
-        <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl">
+        <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl pt-8">
           Реферальная система
         </h4>
 

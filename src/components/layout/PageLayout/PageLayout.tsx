@@ -1,6 +1,9 @@
 import { Header, Menu } from "@/components";
 import { FC, ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
+import cn from "clsx";
+import { useAppSelector } from "@/redux/store";
+import { user } from "@/redux/slices/userSlice";
 
 type Props = {
   children: ReactNode;
@@ -8,9 +11,21 @@ type Props = {
 
 export const PageLayout: FC<Props> = ({ children }) => {
   const location = useLocation();
+  const { userData } = useAppSelector(user);
 
   return (
     <div className="relative flex flex-col min-h-screen bg-none">
+      {userData?.status !== "standart" && (
+        <div
+          className={cn("max-w-[652px] w-full mx-auto py-3 text-center", {
+            "bg-red-500": userData?.status === "demo",
+            "bg-green-500": userData?.status === "pro",
+          })}
+        >
+          {userData?.status.toUpperCase() || ""}
+        </div>
+      )}
+
       <Menu className="sm:mt-8" />
 
       <div className="min-h-screen sm:min-h-max flex flex-col flex-grow">

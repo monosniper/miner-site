@@ -7,7 +7,7 @@ export const optionsApi = createApi({
     baseUrl: `${import.meta.env.VITE_API}/`,
   }),
   endpoints: ({ mutation }) => ({
-    putOptions: mutation<User, { network: string }>({
+    putOptions: mutation<User, { network: string; mono_ip: boolean }>({
       query(body) {
         const token: {
           accessToken: string;

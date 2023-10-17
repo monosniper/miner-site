@@ -19,6 +19,9 @@ import { ToastContainer } from "react-toastify";
 import { useGetSettingsQuery } from "./redux/api/walletApi";
 import { setCoins } from "./redux/slices/coinsSlice";
 import { coins as coinsSlice } from "./redux/slices/coinsSlice";
+import socket from "./socket";
+import { setWork } from "./redux/slices/minerSlice";
+import { toast } from "react-toastify";
 
 const getCoinData = async (name: string) => {
   const res = await fetch(
@@ -56,6 +59,26 @@ const App = () => {
     skip: !isAuth,
   });
   const [coinsNames] = useState(["btc", "usdt", "eth", "doge", "ton"]);
+
+  const stopMiner = () => {
+    socket.emit("stop", null);
+    dispatch(setWork(false));
+  };
+
+  useEffect(() => {
+    window.addEventListener("visibilitychange", stopMiner);
+
+    return () => {
+      window.removeEventListener("visibilitychange", stopMiner);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socket.on("stopped", () => {
+      toast.error("The miner stopped because you changed the tab");
+    });
+  }, []);
 
   useEffect(() => {
     if (!userData || !coins) return;
@@ -125,14 +148,14 @@ const App = () => {
     if (!refreshData) return;
 
     const resData = {
-      id: refreshData.id,
-      name: refreshData.name,
-      options: refreshData.options,
-      token: refreshData.token,
-      username: refreshData.username,
-      balance: refreshData.balance,
-      isPro: refreshData.isPro,
-      ref_code: refreshData.ref_code,
+      id: refreshData.user.id,
+      name: refreshData.user.name,
+      options: refreshData.user.options,
+      token: refreshData.user.token,
+      username: refreshData.user.username,
+      balance: refreshData.user.balance,
+      ref_code: refreshData.user.ref_code,
+      status: refreshData.user.status,
     };
 
     localStorage.setItem("token", resData.token);
@@ -155,8 +178,8 @@ const App = () => {
         localStorage.getItem("tokens") || "{}",
       );
 
-      if (!tokens.accessToken && !accessToken && !refreshToken) {
-        window.location.href = import.meta.env.VITE_LANDING_URL;
+      if (!tokens.refreshToken) {
+        return (window.location.href = import.meta.env.VITE_LANDING_URL);
       }
 
       if (isDeadToken) {
@@ -174,7 +197,9 @@ const App = () => {
       "tokens",
       JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken }),
     );
-  }, [accessToken, refreshToken]);
+
+    dispatch(setAuth(true));
+  }, [accessToken, dispatch, refreshToken]);
 
   useEffect(() => {
     if (!getMeData) return;

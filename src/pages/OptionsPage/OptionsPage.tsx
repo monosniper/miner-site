@@ -1,12 +1,14 @@
-import { Button, FieldWrapper, TextField } from "@/components/ui";
+import { Button, Checkbox, FieldWrapper, TextField } from "@/components/ui";
 import { usePutOptionsMutation } from "@/redux/api/optionsApi";
-import { setUserData } from "@/redux/slices/userSlice";
-import { useAppDispatch } from "@/redux/store";
-import { useEffect } from "react";
+import { setUserData, user } from "@/redux/slices/userSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 type FormData = {
   network: string;
+  mono_ip: boolean;
 };
 
 export const OptionsPage = () => {
@@ -14,9 +16,13 @@ export const OptionsPage = () => {
     usePutOptionsMutation();
   const methods = useForm<FormData>();
   const dispatch = useAppDispatch();
+  const { userData } = useAppSelector(user);
+  const [isMonoIp, setMonoIp] = useState<boolean>(
+    userData?.options.mono_ip || false,
+  );
 
-  const formHandler = ({ network }: FormData) => {
-    putOptions({ network });
+  const formHandler = ({ network, mono_ip }: FormData) => {
+    putOptions({ network, mono_ip });
   };
 
   useEffect(() => {
@@ -28,8 +34,26 @@ export const OptionsPage = () => {
   useEffect(() => {
     if (!isError) return;
 
-    alert("Mistake. Repeat again");
+    toast.error("Mistake. Repeat again");
   }, [isError]);
+
+  useEffect(() => {
+    if (!userData) return;
+
+    if (userData.options.network) {
+      methods.setValue("network", userData.options.network);
+    }
+
+    if (userData.options.mono_ip !== undefined) {
+      methods.setValue("mono_ip", userData.options.mono_ip);
+    }
+  }, [methods, userData]);
+
+  useEffect(() => {
+    if (!userData) return;
+
+    setMonoIp(userData.options.mono_ip!);
+  }, [userData]);
 
   return (
     <div className="flex flex-col flex-grow mt-8 mb-[110px]">
@@ -61,23 +85,15 @@ export const OptionsPage = () => {
                 }}
               />
             </FieldWrapper>
-
-            {/* <Radio
-                list={[
-                  {
-                    id: "network",
-                    name: "network",
-                    value: "mono",
-                    label: "Use mono IP",
-                  },
-                  {
-                    id: "mac",
-                    name: "network",
-                    value: "mac",
-                    label: "Start with MacOS",
-                  },
-                ]}
-              /> */}
+            {/* 
+            <Checkbox
+              label="Use mono IP"
+              id="useMonoIP"
+              isCheckedVal={isMonoIp}
+              onChange={(value) => {
+                setMonoIp(value);
+              }}
+            /> */}
           </div>
 
           <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">

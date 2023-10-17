@@ -8,7 +8,7 @@ const initialState: {
   wallet?: string;
   totalBalance?: number;
 } = {
-  isAuth: JSON.parse(localStorage.getItem("tokens") || "false") || false,
+  isAuth: localStorage.getItem("tokens") ? true : false,
   userData: undefined,
   sumCoins: undefined,
   wallet: undefined,

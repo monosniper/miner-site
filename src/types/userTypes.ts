@@ -3,10 +3,11 @@ export type User = {
   name: string;
   options: {
     network?: string;
+    mono_ip?: boolean;
   };
   token: string;
   username: string;
   balance: { [key: string]: number };
-  isPro: boolean;
+  status: string;
   ref_code: string;
 };

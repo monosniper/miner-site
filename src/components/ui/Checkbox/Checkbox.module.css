@@ -1,0 +1,11 @@
+.circle {
+  @apply flex justify-center items-center w-8 h-8 rounded-full border border-base-border-100 bg-base-200;
+}
+
+.circle div {
+  @apply bg-[#C1AAFF] w-4 h-4 rounded-full hidden;
+}
+
+.circle.active div {
+  @apply block;
+}
