@@ -54,7 +54,11 @@ export const ProPage = () => {
             Buy PRO Network for max wage.
           </h3>
 
-          <Link className="mt-10 inline-block" to="/">
+          <Link
+            className="mt-10 inline-block"
+            target="_blank"
+            to={`https://t.me/${supportVal}`}
+          >
             Know more
           </Link>
 

@@ -36,7 +36,8 @@ export const VerificationPage = () => {
               <p>Verificate your ID to withdraw money.</p>
               <Link
                 className="mt-4 inline-block text-sm text-gray-2 border-b border-gray-2"
-                to="/"
+                target="_blank"
+                to={`https://t.me/${supportVal}`}
               >
                 Know more
               </Link>
