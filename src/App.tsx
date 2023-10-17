@@ -155,6 +155,10 @@ const App = () => {
         localStorage.getItem("tokens") || "{}",
       );
 
+      if (!tokens.accessToken) {
+        window.location.href = import.meta.env.VITE_LANDING_URL;
+      }
+
       if (isDeadToken) {
         refresh({ refreshToken: tokens.refreshToken });
       }
