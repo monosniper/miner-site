@@ -18,7 +18,7 @@ export const OptionsPage = () => {
   const dispatch = useAppDispatch();
   const { userData } = useAppSelector(user);
   const [isMonoIp, setMonoIp] = useState<boolean>(
-    userData?.options.mono_ip || false
+    userData?.options.mono_ip || false,
   );
 
   const formHandler = ({ network, mono_ip }: FormData) => {
@@ -50,8 +50,10 @@ export const OptionsPage = () => {
     }
   }, [methods, userData]);
 
-  console.log(isMonoIp);
-
+  useEffect(() => {
+    methods.setValue("mono_ip", isMonoIp);
+  }, [isMonoIp, methods]);
+  
   return (
     <div className="flex flex-col flex-grow mt-8 mb-[110px]">
       <div className="container flex flex-col flex-grow">
