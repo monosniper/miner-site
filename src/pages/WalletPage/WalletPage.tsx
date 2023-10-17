@@ -6,6 +6,9 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { coins as coinsSlice } from "../../redux/slices/coinsSlice";
+import { Coin } from "@/components";
+import { coinsIcons } from "@/data/coinsIcons";
 
 type FormData = {
   amount: string;
@@ -19,6 +22,7 @@ export const WalletPage = () => {
   const navigate = useNavigate();
   const { userData } = useAppSelector(user);
   const { wallet } = useAppSelector(user);
+  const { coins } = useAppSelector(coinsSlice);
 
   const formHandler = ({ amount, wallet }: FormData) => {
     if (!amount || !wallet) return;
@@ -114,6 +118,38 @@ export const WalletPage = () => {
             </div>
           </form>
         </div>
+
+        <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl pt-8">
+          Баланс
+        </h4>
+
+        {userData?.balance && (
+          <div className="flex flex-wrap -m-2 mt-8">
+            {Object.entries(userData.balance).map((el, idx) => {
+              const name = el[0];
+              const amount = el[1];
+
+              const coinInfo = coins.find((el) => el.name === name);
+              const usdt = coins.find((el) => el.name === "usdt");
+
+              if (!coinInfo || !usdt) return;
+
+              const resAmount = amount * usdt.usd;
+
+              return (
+                <div className="w-full sm:w-1/2 p-2" key={idx}>
+                  <Coin
+                    fullName={coinInfo.fullName}
+                    name={coinInfo.name}
+                    course={Number(resAmount.toFixed(6))}
+                    icon={coinsIcons[coinInfo.name]}
+                    disabled={true}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl pt-8">
           Реферальная система

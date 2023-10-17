@@ -113,16 +113,10 @@ export const MinerPage = () => {
     founds.forEach((el) => {
       const { name, amount } = el;
 
-      const currentCoin = coins.find(
-        (item) => name.toLowerCase() === item.name.toLowerCase(),
-      );
-
-      const coinAmount = currentCoin ? amount / currentCoin.usd : el.amount;
-
       if (sumCoins[name.toLowerCase()]) {
-        sumCoins[name.toLowerCase()] += coinAmount;
+        sumCoins[name.toLowerCase()] += amount;
       } else {
-        sumCoins[name.toLowerCase()] = coinAmount;
+        sumCoins[name.toLowerCase()] = amount;
       }
     });
 
@@ -139,20 +133,18 @@ export const MinerPage = () => {
             </div>
 
             <div className="flex flex-wrap -m-2">
-              {coins
-                .filter((el) => el.name !== "usdt")
-                .map((el, idx) => {
-                  return (
-                    <div className="w-full sm:w-1/2 p-2" key={idx}>
-                      <Coin
-                        fullName={el.fullName}
-                        name={el.name}
-                        course={Number(el.usd.toFixed(2))}
-                        icon={coinsIcons[el.name]}
-                      />
-                    </div>
-                  );
-                })}
+              {coins.map((el, idx) => {
+                return (
+                  <div className="w-full sm:w-1/2 p-2" key={idx}>
+                    <Coin
+                      fullName={el.fullName}
+                      name={el.name}
+                      course={Number(el.usd.toFixed(2))}
+                      icon={coinsIcons[el.name]}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             {!atWork ? (

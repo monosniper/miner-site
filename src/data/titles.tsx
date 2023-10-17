@@ -3,7 +3,7 @@ import { OptionsIcon, RocketIcon, WalletIcon } from "@/components/icons";
 export const titles: { [key: string]: { title: string; icon?: JSX.Element } } =
   {
     "/miner": {
-      title: "Miner",
+      title: "Crypto Miner",
       icon: <RocketIcon />,
     },
 

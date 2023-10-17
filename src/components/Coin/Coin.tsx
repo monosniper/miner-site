@@ -9,9 +9,10 @@ type Props = {
   fullName: string;
   name: string;
   course: number;
+  disabled?: boolean;
 };
 
-export const Coin: FC<Props> = ({ icon, fullName, name, course }) => {
+export const Coin: FC<Props> = ({ icon, fullName, name, course, disabled }) => {
   const dispatch = useAppDispatch();
   const { selectedCoins } = useAppSelector(coins);
   const [isSelected, setSelected] = useState(false);
@@ -46,6 +47,7 @@ export const Coin: FC<Props> = ({ icon, fullName, name, course }) => {
         {
           "border !border-[#5B39B8] bg-base-200 bg-gradient-500": isSelected,
           "cursor-not-allowed opacity-70": atWork || name === "usdt",
+          "pointer-events-none": disabled,
         },
       )}
       onClick={onClickHandler}
@@ -58,7 +60,7 @@ export const Coin: FC<Props> = ({ icon, fullName, name, course }) => {
         <p className="text-[#B6BFCF] text-xs">{`${fullName}, ${name}`}</p>
 
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[rgba(223,219,221,1)] text-xl sm:text-lg font-medium">
+          <p className="text-[rgba(223,219,221,1)] text-xl sm:text-lg font-medium ">
             ${course}
           </p>
 
