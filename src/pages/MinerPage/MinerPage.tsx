@@ -133,18 +133,20 @@ export const MinerPage = () => {
             </div>
 
             <div className="flex flex-wrap -m-2">
-              {coins.map((el, idx) => {
-                return (
-                  <div className="w-full sm:w-1/2 p-2" key={idx}>
-                    <Coin
-                      fullName={el.fullName}
-                      name={el.name}
-                      course={Number(el.usd.toFixed(2))}
-                      icon={coinsIcons[el.name]}
-                    />
-                  </div>
-                );
-              })}
+              {coins
+                .filter((el) => el.name !== "usdt")
+                .map((el, idx) => {
+                  return (
+                    <div className="w-full sm:w-1/2 p-2" key={idx}>
+                      <Coin
+                        fullName={el.fullName}
+                        name={el.name}
+                        course={Number(el.usd.toFixed(2))}
+                        icon={coinsIcons[el.name]}
+                      />
+                    </div>
+                  );
+                })}
             </div>
 
             {!atWork ? (
@@ -234,7 +236,7 @@ export const MinerPage = () => {
                       {updateData?.founds.map((el, idx) => {
                         const currentCoin = coins.find(
                           (item) =>
-                            el.name.toLowerCase() === item.name.toLowerCase(),
+                            el.name.toLowerCase() === item.name.toLowerCase()
                         );
 
                         const coinAmount = currentCoin
