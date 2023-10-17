@@ -22,7 +22,7 @@ import { coins as coinsSlice } from "./redux/slices/coinsSlice";
 
 const getCoinData = async (name: string) => {
   const res = await fetch(
-    `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${name}/usd.json`,
+    `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${name}/usd.json`
   );
 
   const result = await res.json();
@@ -64,7 +64,7 @@ const App = () => {
 
     const sums = Object.entries(balance).map((el) => {
       const currentCoinCourse = coins.find(
-        (item) => el[0].toLowerCase() === item.name.toLowerCase(),
+        (item) => el[0].toLowerCase() === item.name.toLowerCase()
       );
 
       if (!currentCoinCourse) return el;
@@ -77,7 +77,7 @@ const App = () => {
     if (sums) {
       const totalBalance = sums.reduce(
         (prev, curr) => prev + Number(curr[1]),
-        0,
+        0
       );
 
       dispatch(setTotalBalance(totalBalance));
@@ -94,7 +94,7 @@ const App = () => {
             fullName: coinsFullNames[coin],
             ...data,
           };
-        }),
+        })
       );
 
       dispatch(setCoins(coinDataArray));
@@ -144,7 +144,7 @@ const App = () => {
       JSON.stringify({
         accessToken: refreshData.accessToken,
         refreshToken: refreshData.refreshToken,
-      }),
+      })
     );
   }, [refreshData, dispatch]);
 
@@ -152,10 +152,10 @@ const App = () => {
     const check = async () => {
       const isDeadToken = await checkToken();
       const tokens: { accessToken: string; refreshToken: string } = JSON.parse(
-        localStorage.getItem("tokens") || "{}",
+        localStorage.getItem("tokens") || "{}"
       );
 
-      if (!tokens.accessToken) {
+      if (!tokens.accessToken && !accessToken && !refreshToken) {
         window.location.href = import.meta.env.VITE_LANDING_URL;
       }
 
@@ -165,14 +165,14 @@ const App = () => {
     };
 
     check();
-  }, [accessToken, dispatch, navigate, refresh]);
+  }, [accessToken, dispatch, navigate, refresh, refreshToken]);
 
   useEffect(() => {
     if (!accessToken && !refreshToken) return;
 
     localStorage.setItem(
       "tokens",
-      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken }),
+      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken })
     );
   }, [accessToken, refreshToken]);
 
