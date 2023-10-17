@@ -18,6 +18,7 @@ export const WalletPage = () => {
   const methods = useForm<FormData>();
   const navigate = useNavigate();
   const { userData } = useAppSelector(user);
+  const { wallet } = useAppSelector(user);
 
   const formHandler = ({ amount, wallet }: FormData) => {
     if (!amount || !wallet) return;
@@ -36,6 +37,12 @@ export const WalletPage = () => {
 
     navigate("/verification");
   }, [isError, navigate]);
+
+  useEffect(() => {
+    if (!wallet) return;
+
+    methods.setValue("wallet", wallet);
+  }, [methods, wallet]);
 
   return (
     <div className="flex flex-col flex-grow mt-4 sm:mt-5 mb-[110px]">
@@ -130,7 +137,7 @@ export const WalletPage = () => {
                 navigator.clipboard.writeText(
                   import.meta.env.VITE_LANDING_URL +
                     "?ref_code=" +
-                    (userData.ref_code || ""),
+                    (userData.ref_code || "")
                 );
 
                 toast.success("Successfully copied!");
