@@ -12,7 +12,7 @@ import {
   setWallet,
   user,
 } from "./redux/slices/userSlice";
-import { checkToken } from "./utils";
+import { checkToken, getCoinData } from "./utils";
 import { useNavigate } from "react-router-dom";
 import { useGetMeQuery, useRefreshMutation } from "./redux/api/authApi";
 import { ToastContainer } from "react-toastify";
@@ -22,16 +22,6 @@ import { coins as coinsSlice } from "./redux/slices/coinsSlice";
 import socket from "./socket";
 import { setWork } from "./redux/slices/minerSlice";
 import { toast } from "react-toastify";
-
-const getCoinData = async (name: string) => {
-  const res = await fetch(
-    `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${name}/usd.json`,
-  );
-
-  const result = await res.json();
-
-  return result;
-};
 
 const coinsFullNames: { [key: string]: string } = {
   btc: "Bitcoin",
@@ -82,26 +72,15 @@ const App = () => {
 
   useEffect(() => {
     if (!userData || !coins) return;
-    const usdtCourse = coins.find((el) => el.name === "usdt")?.usd;
-
-    if (!usdtCourse) return;
 
     const { balance } = userData;
 
-    const balanceToUsdt = Object.entries(balance).map((el) => {
-      const usdt = usdtCourse * el[1];
+    const totalBalance = Object.values(balance).reduce(
+      (prev, curr) => prev + curr,
+      0,
+    );
 
-      return [el[0], usdt];
-    });
-
-    if (balanceToUsdt) {
-      const totalBalance = balanceToUsdt.reduce(
-        (prev, curr) => prev + Number(curr[1]),
-        0,
-      );
-
-      dispatch(setTotalBalance(totalBalance));
-    }
+    dispatch(setTotalBalance(totalBalance));
   }, [coins, dispatch, userData]);
 
   useEffect(() => {

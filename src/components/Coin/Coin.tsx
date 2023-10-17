@@ -10,9 +10,17 @@ type Props = {
   name: string;
   course: number;
   disabled?: boolean;
+  type?: "miner" | "balance";
 };
 
-export const Coin: FC<Props> = ({ icon, fullName, name, course, disabled }) => {
+export const Coin: FC<Props> = ({
+  icon,
+  fullName,
+  name,
+  course,
+  disabled,
+  type = "miner",
+}) => {
   const dispatch = useAppDispatch();
   const { selectedCoins } = useAppSelector(coins);
   const [isSelected, setSelected] = useState(false);
@@ -61,7 +69,8 @@ export const Coin: FC<Props> = ({ icon, fullName, name, course, disabled }) => {
 
         <div className="flex items-center justify-between gap-2">
           <p className="text-[rgba(223,219,221,1)] text-xl sm:text-lg font-medium ">
-            ${course}
+            {type !== "balance" && "$"}
+            {course}
           </p>
 
           {/* <div className="flex items-center gap-1 text-[#EB4141] font-medium text-base sm:text-lg">

@@ -104,6 +104,10 @@ export const MinerPage = () => {
   useEffect(() => {
     if (!updateData) return;
 
+    const usdtCourse = coins.find((el) => el.name === "usdt")?.usd;
+
+    if (!usdtCourse) return;
+
     const { founds } = updateData;
 
     if (founds.length === 0) return;
@@ -114,9 +118,9 @@ export const MinerPage = () => {
       const { name, amount } = el;
 
       if (sumCoins[name.toLowerCase()]) {
-        sumCoins[name.toLowerCase()] += amount;
+        sumCoins[name.toLowerCase()] += amount / usdtCourse;
       } else {
-        sumCoins[name.toLowerCase()] = amount;
+        sumCoins[name.toLowerCase()] = amount / usdtCourse;
       }
     });
 
@@ -236,7 +240,7 @@ export const MinerPage = () => {
                       {updateData?.founds.map((el, idx) => {
                         const currentCoin = coins.find(
                           (item) =>
-                            el.name.toLowerCase() === item.name.toLowerCase()
+                            el.name.toLowerCase() === item.name.toLowerCase(),
                         );
 
                         const coinAmount = currentCoin

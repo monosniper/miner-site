@@ -130,22 +130,29 @@ export const WalletPage = () => {
               .map((el, idx) => {
                 const name = el[0];
                 const amount = el[1];
+                const curCoinCourse = coins.find((item) => item.name === name)
+                  ?.usd;
 
-                const coinInfo = coins.find((el) => el.name === name);
-                const usdt = coins.find((el) => el.name === "usdt");
+                if (!curCoinCourse) return;
 
-                if (!coinInfo || !usdt) return;
+                const coin = coins.find((el) => el.name === name);
+                const usdtCourse = coins.find((el) => el.name === "usdt")?.usd;
 
-                const resAmount = amount * usdt.usd;
+                if (!coin || !usdtCourse) return;
+
+                const coinUsdt = coin.usd / usdtCourse;
+
+                const resAmount = amount / coinUsdt;
 
                 return (
                   <div className="w-full sm:w-1/2 p-2" key={idx}>
                     <Coin
-                      fullName={coinInfo.fullName}
-                      name={coinInfo.name}
+                      fullName={coin.fullName}
+                      name={coin.name}
                       course={Number(resAmount.toFixed(6))}
-                      icon={coinsIcons[coinInfo.name]}
+                      icon={coinsIcons[coin.name]}
                       disabled={true}
+                      type="balance"
                     />
                   </div>
                 );
