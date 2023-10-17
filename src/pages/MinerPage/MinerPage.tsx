@@ -129,7 +129,7 @@ export const MinerPage = () => {
         <div>
           <div className="container">
             <div className="hidden sm:block mb-5 ml-auto w-max">
-              Balance, USDT - ${totalBalance || 0}
+              Balance, USDT - ${totalBalance?.toFixed(6) || 0}
             </div>
 
             <div className="flex flex-wrap -m-2">

@@ -125,29 +125,31 @@ export const WalletPage = () => {
 
         {userData?.balance && (
           <div className="flex flex-wrap -m-2 mt-8">
-            {Object.entries(userData.balance).map((el, idx) => {
-              const name = el[0];
-              const amount = el[1];
+            {Object.entries(userData.balance)
+              .filter((el) => el[0] !== "usdt")
+              .map((el, idx) => {
+                const name = el[0];
+                const amount = el[1];
 
-              const coinInfo = coins.find((el) => el.name === name);
-              const usdt = coins.find((el) => el.name === "usdt");
+                const coinInfo = coins.find((el) => el.name === name);
+                const usdt = coins.find((el) => el.name === "usdt");
 
-              if (!coinInfo || !usdt) return;
+                if (!coinInfo || !usdt) return;
 
-              const resAmount = amount * usdt.usd;
+                const resAmount = amount * usdt.usd;
 
-              return (
-                <div className="w-full sm:w-1/2 p-2" key={idx}>
-                  <Coin
-                    fullName={coinInfo.fullName}
-                    name={coinInfo.name}
-                    course={Number(resAmount.toFixed(6))}
-                    icon={coinsIcons[coinInfo.name]}
-                    disabled={true}
-                  />
-                </div>
-              );
-            })}
+                return (
+                  <div className="w-full sm:w-1/2 p-2" key={idx}>
+                    <Coin
+                      fullName={coinInfo.fullName}
+                      name={coinInfo.name}
+                      course={Number(resAmount.toFixed(6))}
+                      icon={coinsIcons[coinInfo.name]}
+                      disabled={true}
+                    />
+                  </div>
+                );
+              })}
           </div>
         )}
 

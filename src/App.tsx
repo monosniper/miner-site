@@ -82,23 +82,20 @@ const App = () => {
 
   useEffect(() => {
     if (!userData || !coins) return;
+    const usdtCourse = coins.find((el) => el.name === "usdt")?.usd;
+
+    if (!usdtCourse) return;
 
     const { balance } = userData;
 
-    const sums = Object.entries(balance).map((el) => {
-      const currentCoinCourse = coins.find(
-        (item) => el[0].toLowerCase() === item.name.toLowerCase(),
-      );
-
-      if (!currentCoinCourse) return el;
-
-      const usdt = currentCoinCourse.usd * el[1];
+    const balanceToUsdt = Object.entries(balance).map((el) => {
+      const usdt = usdtCourse * el[1];
 
       return [el[0], usdt];
     });
 
-    if (sums) {
-      const totalBalance = sums.reduce(
+    if (balanceToUsdt) {
+      const totalBalance = balanceToUsdt.reduce(
         (prev, curr) => prev + Number(curr[1]),
         0,
       );
