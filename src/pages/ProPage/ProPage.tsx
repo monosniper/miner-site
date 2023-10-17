@@ -1,7 +1,25 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
+import { useGetSettingsQuery } from "@/redux/api/walletApi";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useAppSelector } from "@/redux/store";
+import { user } from "@/redux/slices/userSlice";
 
 export const ProPage = () => {
+  const { data: settingsData } = useGetSettingsQuery(null);
+  const [supportVal, setSupportVal] = useState<string>();
+  const { wallet } = useAppSelector(user);
+
+  useEffect(() => {
+    if (!settingsData) return;
+
+    const support = settingsData.find((el) => el.key === "support");
+
+    if (!support) return;
+
+    setSupportVal(support.value);
+  }, [settingsData, supportVal]);
+
   return (
     <div className="bg-gradient-100 sm:bg-none flex flex-col flex-grow relative">
       <svg
@@ -63,12 +81,21 @@ export const ProPage = () => {
         <form className="flex flex-col flex-grow relative z-20 mt-6 sm:mt-0 mb-[106px] pb-5">
           <div className="flex flex-col gap-6">
             <FieldWrapper title="Wallet">
-              <TextField placeholder="Your wallet" />
+              <TextField placeholder="Your wallet" value={wallet || ""} />
             </FieldWrapper>
           </div>
 
           <div className="mx-auto mt-auto sm:mt-10 pt-5 sm:pt-0">
-            <Button className="!w-max bg-white" title="Payed" type="submit" />
+            <Button
+              className="!w-max bg-white"
+              title="Payed"
+              type="button"
+              onClick={() => {
+                if (supportVal) {
+                  window.open(`https://t.me/${supportVal}`);
+                }
+              }}
+            />
           </div>
         </form>
       </div>

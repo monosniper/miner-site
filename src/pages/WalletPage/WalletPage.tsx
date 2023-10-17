@@ -137,7 +137,7 @@ export const WalletPage = () => {
                 navigator.clipboard.writeText(
                   import.meta.env.VITE_LANDING_URL +
                     "?ref_code=" +
-                    (userData.ref_code || "")
+                    (userData.ref_code || ""),
                 );
 
                 toast.success("Successfully copied!");
