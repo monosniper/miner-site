@@ -16,7 +16,7 @@ export const MinerPage = () => {
   const checkedRef = useRef<HTMLDivElement>(null);
   const foundsRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
-  const { sumCoins, userData } = useAppSelector(user);
+  const { sumCoins, userData, isBlockedMiner } = useAppSelector(user);
   const [loading, setLoading] = useState(false);
   const [setBalance, { data: balanceData }] = useSetBalanceMutation();
   const [prevFounds, setPrevFounds] = useState<
@@ -177,7 +177,7 @@ export const MinerPage = () => {
               <button
                 className="disabled:opacity-60 ease-linear duration-200 px-12 py-3 flex items-center gap-2 justify-center mx-auto mt-5 bg-white text-xl sm:text-base font-inter rounded-full text-black w-full sm:w-max"
                 onClick={startMiner}
-                disabled={loading}
+                disabled={isBlockedMiner || loading}
               >
                 {!loading && (
                   <svg width="21" height="20" viewBox="0 0 21 20" fill="none">
@@ -260,7 +260,7 @@ export const MinerPage = () => {
                       {updateData?.founds.map((el, idx) => {
                         const currentCoin = coins.find(
                           (item) =>
-                            el.name.toLowerCase() === item.name.toLowerCase(),
+                            el.name.toLowerCase() === item.name.toLowerCase()
                         );
 
                         const coinAmount = currentCoin

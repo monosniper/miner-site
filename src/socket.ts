@@ -9,7 +9,7 @@ const socket = io(import.meta.env.VITE_SOCKET_URI, {
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionAttempts: 3,
-  autoConnect: true,
+  autoConnect: false,
 });
 
 export default socket;

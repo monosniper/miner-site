@@ -7,6 +7,7 @@ import { useRouter } from "./hooks/useRouter";
 import { useAppDispatch, useAppSelector } from "./redux/store";
 import {
   setAuth,
+  setBlockedMiner,
   setUserData,
   setWallet,
   user,
@@ -21,6 +22,7 @@ import socket from "./socket";
 import { miner, setWork } from "./redux/slices/minerSlice";
 import { Disconnect } from "./components";
 import { main, setDisconnected } from "./redux/slices/mainSlice";
+import { toast } from "react-toastify";
 
 const coinsFullNames: { [key: string]: string } = {
   btc: "Bitcoin",
@@ -36,7 +38,7 @@ const App = () => {
   const accessToken = params.get("accessToken");
   const refreshToken = params.get("refreshToken");
   const dispatch = useAppDispatch();
-  const { isAuth } = useAppSelector(user);
+  const { isAuth, userData, isBlockedMiner } = useAppSelector(user);
   const { atWork } = useAppSelector(miner);
   const navigate = useNavigate();
   const [refresh, { isError: refreshIsError, data: refreshData }] =
@@ -49,6 +51,22 @@ const App = () => {
   });
   const [coinsNames] = useState(["btc", "usdt", "eth", "doge", "ton"]);
   const { isDisconnected } = useAppSelector(main);
+
+  useEffect(() => {
+    if (!userData) return;
+
+    if (userData.demo_time >= 600) {
+      dispatch(setBlockedMiner(true));
+    }
+  }, [dispatch, userData]);
+
+  useEffect(() => {
+    if (isBlockedMiner) {
+      toast.warning(
+        "The lifetime of the demo mode has expired. To buy a miner, click Buy Pro"
+      );
+    }
+  }, [isBlockedMiner]);
 
   const stopMiner = () => {
     socket.emit("stop", null);
@@ -63,6 +81,7 @@ const App = () => {
     } else {
       if (atWork) {
         stopMiner();
+
         socket.disconnect();
       }
     }
@@ -94,12 +113,20 @@ const App = () => {
       dispatch(setDisconnected(true));
     });
 
+    socket.on("demo_expired", () => {
+      stopMiner();
+
+      dispatch(setBlockedMiner(true));
+    });
+
     return () => {
       socket.off("connect");
       socket.off("reconnect_attempt");
       socket.off("disconnect");
       socket.off("reconnect");
+      socket.off("demo_expired");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   useEffect(() => {
@@ -112,7 +139,7 @@ const App = () => {
             fullName: coinsFullNames[coin],
             ...data,
           };
-        }),
+        })
       );
 
       dispatch(setCoins(coinDataArray));
@@ -163,7 +190,7 @@ const App = () => {
       JSON.stringify({
         accessToken: refreshData.accessToken,
         refreshToken: refreshData.refreshToken,
-      }),
+      })
     );
   }, [refreshData, dispatch]);
 
@@ -171,7 +198,7 @@ const App = () => {
     const check = async () => {
       const isDeadToken = await checkToken();
       const tokens: { accessToken: string; refreshToken: string } = JSON.parse(
-        localStorage.getItem("tokens") || "{}",
+        localStorage.getItem("tokens") || "{}"
       );
 
       if (!tokens.refreshToken) {
@@ -193,11 +220,13 @@ const App = () => {
 
     localStorage.setItem(
       "tokens",
-      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken }),
+      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken })
     );
 
+    navigate("/");
+
     dispatch(setAuth(true));
-  }, [accessToken, dispatch, refreshToken]);
+  }, [accessToken, dispatch, navigate, refreshToken]);
 
   useEffect(() => {
     if (!getMeData) return;
@@ -205,6 +234,12 @@ const App = () => {
     localStorage.setItem("token", getMeData.token);
 
     dispatch(setUserData(getMeData));
+
+    // eslint-disable-next-line
+    // @ts-ignore
+    socket.auth.token = getMeData.token;
+
+    socket.connect();
   }, [dispatch, getMeData]);
 
   return (
@@ -213,7 +248,7 @@ const App = () => {
 
       <ToastContainer
         position="top-center"
-        autoClose={2000}
+        autoClose={4000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

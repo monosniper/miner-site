@@ -11,5 +11,4 @@ export type User = {
   status: string;
   ref_code: string;
   demo_time: number;
-  demo_expired?: boolean;
 };

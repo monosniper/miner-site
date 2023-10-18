@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import cn from "clsx";
 import { useAppSelector } from "@/redux/store";
 import { user } from "@/redux/slices/userSlice";
+import { toast } from "react-toastify";
 
 type Props = {
   children: ReactNode;
@@ -13,14 +14,45 @@ export const PageLayout: FC<Props> = ({ children }) => {
   const location = useLocation();
   const { userData } = useAppSelector(user);
 
+  const showModeTime = () => {
+    if (!userData) return;
+
+    const { demo_time, status } = userData;
+
+    if (status === "demo") {
+      const secondsUser = 600 - demo_time;
+
+      if (demo_time >= 600) {
+        return toast.error("There's no time left");
+      }
+
+      const hours = Math.floor(secondsUser / 3600);
+      const remainingSeconds = secondsUser % 3600;
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+
+      const formattedHours = hours < 10 ? "0" + hours : hours;
+      const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+      const formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
+
+      toast.warning(
+        `Time left - ${formattedHours}:${formattedMinutes}:${formattedSeconds}`
+      );
+    }
+  };
+
   return (
     <div className="relative flex flex-col min-h-screen bg-none">
       {userData?.status !== "standart" && (
         <div
-          className={cn("max-w-[652px] w-full mx-auto py-3 text-center", {
-            "bg-red-500": userData?.status === "demo",
-            "bg-green-500": userData?.status === "pro",
-          })}
+          className={cn(
+            "max-w-[652px] w-full mx-auto py-3 text-center cursor-pointer",
+            {
+              "bg-red-500": userData?.status === "demo",
+              "bg-green-500": userData?.status === "pro",
+            }
+          )}
+          onClick={showModeTime}
         >
           {userData?.status.toUpperCase() || ""}
         </div>

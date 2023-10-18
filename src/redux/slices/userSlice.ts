@@ -7,12 +7,14 @@ const initialState: {
   sumCoins?: { [key: string]: number };
   wallet?: string;
   totalBalance: number;
+  isBlockedMiner: boolean;
 } = {
   isAuth: localStorage.getItem("tokens") ? true : false,
   userData: undefined,
   sumCoins: undefined,
   wallet: undefined,
   totalBalance: 0,
+  isBlockedMiner: false,
 };
 
 export const userSlice = createSlice({
@@ -29,7 +31,7 @@ export const userSlice = createSlice({
 
     setSumCoins: (
       state,
-      action: PayloadAction<{ [key: string]: number } | undefined>,
+      action: PayloadAction<{ [key: string]: number } | undefined>
     ) => {
       state.sumCoins = action.payload;
     },
@@ -41,12 +43,22 @@ export const userSlice = createSlice({
     setTotalBalance: (state, action: PayloadAction<number>) => {
       state.totalBalance = action.payload;
     },
+
+    setBlockedMiner: (state, action: PayloadAction<boolean>) => {
+      state.isBlockedMiner = action.payload;
+    },
   },
 });
 
 export default userSlice.reducer;
 
-export const { setAuth, setUserData, setSumCoins, setWallet, setTotalBalance } =
-  userSlice.actions;
+export const {
+  setAuth,
+  setUserData,
+  setSumCoins,
+  setWallet,
+  setTotalBalance,
+  setBlockedMiner,
+} = userSlice.actions;
 
 export const user = (state: RootState) => state.user;
