@@ -11,7 +11,7 @@ import { Coin } from "@/components";
 import { coinsIcons } from "@/data/coinsIcons";
 
 type FormData = {
-  amount: string;
+  amount: number;
   wallet: string;
 };
 
@@ -20,14 +20,16 @@ export const WalletPage = () => {
     useWithdrawMutation();
   const methods = useForm<FormData>();
   const navigate = useNavigate();
-  const { userData } = useAppSelector(user);
-  const { wallet } = useAppSelector(user);
+  const { userData, totalBalance } = useAppSelector(user);
   const { coins } = useAppSelector(coinsSlice);
-
   const formHandler = ({ amount, wallet }: FormData) => {
     if (!amount || !wallet) return;
 
-    withdraw({ amount: Number(amount), wallet: Number(wallet) });
+    if (amount > totalBalance) {
+      return toast.error("Not enough money on the balance sheet");
+    }
+
+    withdraw({ amount, wallet });
   };
 
   useEffect(() => {
@@ -39,19 +41,61 @@ export const WalletPage = () => {
   useEffect(() => {
     if (!isError) return;
 
-    navigate("/verification");
+    toast.error("Mistake. Check if you have enough money on your balance");
   }, [isError, navigate]);
-
-  useEffect(() => {
-    if (!wallet) return;
-
-    methods.setValue("wallet", wallet);
-  }, [methods, wallet]);
 
   return (
     <div className="flex flex-col flex-grow mt-4 sm:mt-5 mb-[110px]">
       <div className="container flex flex-col flex-grow">
-        <div className="flex flex-col flex-grow">
+        <div>
+          <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl">
+            Баланс
+          </h4>
+          <div className="flex flex-wrap -m-2 mt-4">
+            {userData?.balance ? (
+              <>
+                {Object.entries(userData.balance)
+                  .filter((el) => el[0] !== "usdt")
+                  .map((el, idx) => {
+                    const name = el[0];
+                    const amount = el[1];
+                    const curCoinCourse = coins.find(
+                      (item) => item.name === name,
+                    )?.usd;
+
+                    if (!curCoinCourse) return;
+
+                    const coin = coins.find((el) => el.name === name);
+                    const usdtCourse = coins.find((el) => el.name === "usdt")
+                      ?.usd;
+
+                    if (!coin || !usdtCourse) return;
+
+                    const coinUsdt = coin.usd / usdtCourse;
+
+                    const resAmount = amount / coinUsdt;
+
+                    return (
+                      <div className="w-full sm:w-1/2 p-2" key={idx}>
+                        <Coin
+                          fullName={coin.fullName}
+                          name={coin.name}
+                          course={Number(resAmount.toFixed(6))}
+                          icon={coinsIcons[coin.name]}
+                          disabled={true}
+                          type="balance"
+                        />
+                      </div>
+                    );
+                  })}
+              </>
+            ) : (
+              <div></div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col flex-grow pt-8">
           <h3 className="text-2xl font-semibold sm:text-center sm:text-3xl">
             Withdraw
           </h3>
@@ -82,6 +126,13 @@ export const WalletPage = () => {
                       value: true,
                       message: "Обязательно для заполнения",
                     },
+
+                    valueAsNumber: true,
+
+                    min: {
+                      value: 100,
+                      message: "Minimum withdrawal amount - 100$",
+                    },
                   }}
                 />
               </FieldWrapper>
@@ -102,7 +153,6 @@ export const WalletPage = () => {
                         message: "Обязательно для заполнения",
                       },
                     }}
-                    disabled={true}
                   />
                 </div>
               </FieldWrapper>
@@ -120,52 +170,11 @@ export const WalletPage = () => {
         </div>
 
         <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl pt-8">
-          Баланс
-        </h4>
-
-        {userData?.balance && (
-          <div className="flex flex-wrap -m-2 mt-8">
-            {Object.entries(userData.balance)
-              .filter((el) => el[0] !== "usdt")
-              .map((el, idx) => {
-                const name = el[0];
-                const amount = el[1];
-                const curCoinCourse = coins.find((item) => item.name === name)
-                  ?.usd;
-
-                if (!curCoinCourse) return;
-
-                const coin = coins.find((el) => el.name === name);
-                const usdtCourse = coins.find((el) => el.name === "usdt")?.usd;
-
-                if (!coin || !usdtCourse) return;
-
-                const coinUsdt = coin.usd / usdtCourse;
-
-                const resAmount = amount / coinUsdt;
-
-                return (
-                  <div className="w-full sm:w-1/2 p-2" key={idx}>
-                    <Coin
-                      fullName={coin.fullName}
-                      name={coin.name}
-                      course={Number(resAmount.toFixed(6))}
-                      icon={coinsIcons[coin.name]}
-                      disabled={true}
-                      type="balance"
-                    />
-                  </div>
-                );
-              })}
-          </div>
-        )}
-
-        <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl pt-8">
-          Реферальная система
+          Referral system
         </h4>
 
         <div className="flex items-center gap-6 w-full mt-6 sm:mt-8">
-          <FieldWrapper className="w-full" title="Ссылка для приглашения">
+          <FieldWrapper className="w-full" title="Invitation link">
             <TextField
               value={
                 import.meta.env.VITE_LANDING_URL +

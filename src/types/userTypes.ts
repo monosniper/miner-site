@@ -10,4 +10,6 @@ export type User = {
   balance: { [key: string]: number };
   status: string;
   ref_code: string;
+  demo_time: number;
+  demo_expired?: boolean;
 };

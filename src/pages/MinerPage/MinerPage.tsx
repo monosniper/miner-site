@@ -33,6 +33,8 @@ export const MinerPage = () => {
       socket.emit("start", {
         data: selectedCoins,
       });
+
+      dispatch(setSumCoins(undefined));
     } else {
       toast.error("Select at least one coin");
     }

@@ -9,7 +9,7 @@ export const walletApi = createApi({
   endpoints: ({ query, mutation }) => ({
     withdraw: mutation<
       { isSuccess: boolean },
-      { amount: number; wallet: number }
+      { amount: number; wallet: string }
     >({
       query(body) {
         const token: {

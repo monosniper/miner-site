@@ -41,7 +41,7 @@ const App = () => {
   const navigate = useNavigate();
   const [refresh, { isError: refreshIsError, data: refreshData }] =
     useRefreshMutation();
-  const { data: getMeData } = useGetMeQuery(null, {
+  const { data: getMeData, isError: getMeIsError } = useGetMeQuery(null, {
     skip: !isAuth,
   });
   const { data: settingsData } = useGetSettingsQuery(null, {
@@ -125,6 +125,7 @@ const App = () => {
       balance: refreshData.user.balance,
       ref_code: refreshData.user.ref_code,
       status: refreshData.user.status,
+      demo_time: refreshData.user.demo_time,
     };
 
     localStorage.setItem("token", resData.token);
@@ -157,7 +158,7 @@ const App = () => {
     };
 
     check();
-  }, [accessToken, dispatch, navigate, refresh, refreshToken]);
+  }, [accessToken, dispatch, navigate, refresh, refreshToken, getMeIsError]);
 
   useEffect(() => {
     if (!accessToken && !refreshToken) return;

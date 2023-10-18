@@ -6,13 +6,13 @@ const initialState: {
   userData?: User;
   sumCoins?: { [key: string]: number };
   wallet?: string;
-  totalBalance?: number;
+  totalBalance: number;
 } = {
   isAuth: localStorage.getItem("tokens") ? true : false,
   userData: undefined,
   sumCoins: undefined,
   wallet: undefined,
-  totalBalance: undefined,
+  totalBalance: 0,
 };
 
 export const userSlice = createSlice({
