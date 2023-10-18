@@ -7,7 +7,6 @@ import { useRouter } from "./hooks/useRouter";
 import { useAppDispatch, useAppSelector } from "./redux/store";
 import {
   setAuth,
-  setTotalBalance,
   setUserData,
   setWallet,
   user,
@@ -18,7 +17,6 @@ import { useGetMeQuery, useRefreshMutation } from "./redux/api/authApi";
 import { ToastContainer } from "react-toastify";
 import { useGetSettingsQuery } from "./redux/api/walletApi";
 import { setCoins } from "./redux/slices/coinsSlice";
-import { coins as coinsSlice } from "./redux/slices/coinsSlice";
 import socket from "./socket";
 import { setWork } from "./redux/slices/minerSlice";
 
@@ -36,8 +34,7 @@ const App = () => {
   const accessToken = params.get("accessToken");
   const refreshToken = params.get("refreshToken");
   const dispatch = useAppDispatch();
-  const { isAuth, userData } = useAppSelector(user);
-  const { coins } = useAppSelector(coinsSlice);
+  const { isAuth } = useAppSelector(user);
   const navigate = useNavigate();
   const [refresh, { isError: refreshIsError, data: refreshData }] =
     useRefreshMutation();
@@ -62,19 +59,6 @@ const App = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!userData || !coins) return;
-
-    const { balance } = userData;
-
-    const totalBalance = Object.values(balance).reduce(
-      (prev, curr) => prev + curr,
-      0,
-    );
-
-    dispatch(setTotalBalance(totalBalance));
-  }, [coins, dispatch, userData]);
 
   useEffect(() => {
     const fetchData = async () => {

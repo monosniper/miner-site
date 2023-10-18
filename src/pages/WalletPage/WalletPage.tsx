@@ -20,12 +20,12 @@ export const WalletPage = () => {
     useWithdrawMutation();
   const methods = useForm<FormData>();
   const navigate = useNavigate();
-  const { userData, totalBalance } = useAppSelector(user);
+  const { userData } = useAppSelector(user);
   const { coins } = useAppSelector(coinsSlice);
   const formHandler = ({ amount, wallet }: FormData) => {
-    if (!amount || !wallet) return;
+    if (!amount || !wallet || !userData) return;
 
-    if (amount > totalBalance) {
+    if (amount > userData.balance.usdt) {
       return toast.error("Not enough money on the balance sheet");
     }
 

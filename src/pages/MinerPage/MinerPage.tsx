@@ -16,7 +16,7 @@ export const MinerPage = () => {
   const checkedRef = useRef<HTMLDivElement>(null);
   const foundsRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
-  const { sumCoins, userData, totalBalance } = useAppSelector(user);
+  const { sumCoins, userData } = useAppSelector(user);
   const [loading, setLoading] = useState(false);
   const [setBalance, { data: balanceData }] = useSetBalanceMutation();
   const [prevFounds, setPrevFounds] = useState<
@@ -109,6 +109,16 @@ export const MinerPage = () => {
       }
     }
 
+    let sumUsdt = 0;
+
+    for (const coin in balance) {
+      if (coin !== "usdt") {
+        sumUsdt += balance[coin];
+      }
+    }
+
+    balance["usdt"] = sumUsdt;
+
     setBalance(balance);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sumCoins]);
@@ -143,7 +153,7 @@ export const MinerPage = () => {
         <div>
           <div className="container">
             <div className="hidden sm:block mb-5 ml-auto w-max">
-              Balance, USDT - ${totalBalance?.toFixed(6) || 0}
+              Balance, USDT - ${userData?.balance.usdt?.toFixed(6) || 0}
             </div>
 
             <div className="flex flex-wrap -m-2">

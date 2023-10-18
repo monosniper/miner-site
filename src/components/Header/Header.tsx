@@ -8,7 +8,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export const Header: FC<PropsWithClassName> = ({ className }) => {
   const location = useLocation();
-  const { totalBalance } = useAppSelector(user);
+  const { userData } = useAppSelector(user);
 
   return (
     <div className="container">
@@ -44,7 +44,7 @@ export const Header: FC<PropsWithClassName> = ({ className }) => {
             <p className="text-[#B6BFCF] text-xs">Balance, USDT</p>
 
             <p className="text-[#DFDBDD] text-xl font-semibold">
-              ${totalBalance?.toFixed(6) || 0}
+              ${userData?.balance.usdt?.toFixed(6) || 0}
             </p>
           </div>
         )}
