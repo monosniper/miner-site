@@ -38,7 +38,7 @@ const App = () => {
   const navigate = useNavigate();
   const [refresh, { isError: refreshIsError, data: refreshData }] =
     useRefreshMutation();
-  const { data: getMeData, isError: getMeIsError } = useGetMeQuery(null, {
+  const { data: getMeData } = useGetMeQuery(null, {
     skip: !isAuth,
   });
   const { data: settingsData } = useGetSettingsQuery(null, {
@@ -142,7 +142,7 @@ const App = () => {
     };
 
     check();
-  }, [accessToken, dispatch, navigate, refresh, refreshToken, getMeIsError]);
+  }, [accessToken, dispatch, navigate, refresh, refreshToken]);
 
   useEffect(() => {
     if (!accessToken && !refreshToken) return;
