@@ -19,6 +19,12 @@ export const MinerPage = () => {
   const { sumCoins, userData, totalBalance } = useAppSelector(user);
   const [loading, setLoading] = useState(false);
   const [setBalance, { data: balanceData }] = useSetBalanceMutation();
+  const [prevFounds, setPrevFounds] = useState<
+    {
+      name: string;
+      amount: number;
+    }[]
+  >([]);
 
   useEffect(() => {
     if (!balanceData) return;
@@ -50,19 +56,6 @@ export const MinerPage = () => {
     socket.on("stopped", () => {
       dispatch(setWork(false));
       setLoading(false);
-
-      if (!userData) return;
-      const balance = { ...userData.balance };
-
-      for (const coin in sumCoins) {
-        if (balance[coin]) {
-          balance[coin] += sumCoins[coin];
-        } else {
-          balance[coin] = sumCoins[coin];
-        }
-      }
-
-      setBalance(balance);
     });
 
     return () => {
@@ -104,6 +97,23 @@ export const MinerPage = () => {
   }, [updateData]);
 
   useEffect(() => {
+    if (!userData || !sumCoins) return;
+
+    const balance = { ...userData.balance };
+
+    for (const coin in sumCoins) {
+      if (balance[coin]) {
+        balance[coin] += sumCoins[coin];
+      } else {
+        balance[coin] = sumCoins[coin];
+      }
+    }
+
+    setBalance(balance);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sumCoins]);
+
+  useEffect(() => {
     if (!updateData) return;
 
     const usdtCourse = coins.find((el) => el.name === "usdt")?.usd;
@@ -114,20 +124,18 @@ export const MinerPage = () => {
 
     if (founds.length === 0) return;
 
+    if (prevFounds.length === founds.length) return;
+
+    setPrevFounds(founds);
+
     const sumCoins: { [name: string]: number } = {};
 
-    founds.forEach((el) => {
-      const { name, amount } = el;
+    const lastFound = founds[founds.length - 1];
 
-      if (sumCoins[name.toLowerCase()]) {
-        sumCoins[name.toLowerCase()] += amount / usdtCourse;
-      } else {
-        sumCoins[name.toLowerCase()] = amount / usdtCourse;
-      }
-    });
+    sumCoins[lastFound.name.toLowerCase()] = lastFound.amount / usdtCourse;
 
     dispatch(setSumCoins(sumCoins));
-  }, [updateData, dispatch, coins]);
+  }, [updateData, dispatch, coins, prevFounds.length]);
 
   return (
     <div className="mb-[110px] sm:mb-0">
