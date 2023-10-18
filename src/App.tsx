@@ -161,6 +161,8 @@ const App = () => {
 
   useEffect(() => {
     if (!accessToken && !refreshToken) return;
+    localStorage.removeItem("tokens");
+    localStorage.removeItem("tokens");
 
     localStorage.setItem(
       "tokens",
