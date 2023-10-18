@@ -31,7 +31,7 @@ export const userSlice = createSlice({
 
     setSumCoins: (
       state,
-      action: PayloadAction<{ [key: string]: number } | undefined>
+      action: PayloadAction<{ [key: string]: number } | undefined>,
     ) => {
       state.sumCoins = action.payload;
     },

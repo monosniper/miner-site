@@ -36,7 +36,7 @@ export const PageLayout: FC<Props> = ({ children }) => {
       const formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
 
       toast.warning(
-        `Time left - ${formattedHours}:${formattedMinutes}:${formattedSeconds}`
+        `Time left - ${formattedHours}:${formattedMinutes}:${formattedSeconds}`,
       );
     }
   };
@@ -50,7 +50,7 @@ export const PageLayout: FC<Props> = ({ children }) => {
             {
               "bg-red-500": userData?.status === "demo",
               "bg-green-500": userData?.status === "pro",
-            }
+            },
           )}
           onClick={showModeTime}
         >

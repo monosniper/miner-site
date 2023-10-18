@@ -260,7 +260,7 @@ export const MinerPage = () => {
                       {updateData?.founds.map((el, idx) => {
                         const currentCoin = coins.find(
                           (item) =>
-                            el.name.toLowerCase() === item.name.toLowerCase()
+                            el.name.toLowerCase() === item.name.toLowerCase(),
                         );
 
                         const coinAmount = currentCoin

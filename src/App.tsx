@@ -63,7 +63,7 @@ const App = () => {
   useEffect(() => {
     if (isBlockedMiner) {
       toast.warning(
-        "The lifetime of the demo mode has expired. To buy a miner, click Buy Pro"
+        "The lifetime of the demo mode has expired. To buy a miner, click Buy Pro",
       );
     }
   }, [isBlockedMiner]);
@@ -139,7 +139,7 @@ const App = () => {
             fullName: coinsFullNames[coin],
             ...data,
           };
-        })
+        }),
       );
 
       dispatch(setCoins(coinDataArray));
@@ -190,7 +190,7 @@ const App = () => {
       JSON.stringify({
         accessToken: refreshData.accessToken,
         refreshToken: refreshData.refreshToken,
-      })
+      }),
     );
   }, [refreshData, dispatch]);
 
@@ -198,7 +198,7 @@ const App = () => {
     const check = async () => {
       const isDeadToken = await checkToken();
       const tokens: { accessToken: string; refreshToken: string } = JSON.parse(
-        localStorage.getItem("tokens") || "{}"
+        localStorage.getItem("tokens") || "{}",
       );
 
       if (!tokens.refreshToken) {
@@ -220,7 +220,7 @@ const App = () => {
 
     localStorage.setItem(
       "tokens",
-      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken })
+      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken }),
     );
 
     navigate("/");
