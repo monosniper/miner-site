@@ -82,7 +82,7 @@ export const MinerPage = () => {
     return () => {
       socket.off("update");
     };
-  }, [dispatch]);
+  }, [dispatch, updateData]);
 
   useEffect(() => {
     if (!checkedRef.current) return;

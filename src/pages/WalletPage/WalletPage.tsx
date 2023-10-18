@@ -102,6 +102,7 @@ export const WalletPage = () => {
 
           <div className="p-4 bg-base-200/60 sm:bg-transparent sm:text-center sm:text-sm flex flex-col gap-4 text-xl font-inter mt-4 rounded-lg">
             <p>Minimum withdraw amount — $100</p>
+            <p className="hidden sm:block">Network TRC-20 (USDT)</p>
             <p className="text-sm border-b border-white w-max sm:hidden">
               Network TRC-20 (USDT)
             </p>

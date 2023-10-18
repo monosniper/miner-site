@@ -18,7 +18,9 @@ import { ToastContainer } from "react-toastify";
 import { useGetSettingsQuery } from "./redux/api/walletApi";
 import { setCoins } from "./redux/slices/coinsSlice";
 import socket from "./socket";
-import { setWork } from "./redux/slices/minerSlice";
+import { miner, setWork } from "./redux/slices/minerSlice";
+import { Disconnect } from "./components";
+import { main, setDisconnected } from "./redux/slices/mainSlice";
 
 const coinsFullNames: { [key: string]: string } = {
   btc: "Bitcoin",
@@ -35,6 +37,7 @@ const App = () => {
   const refreshToken = params.get("refreshToken");
   const dispatch = useAppDispatch();
   const { isAuth } = useAppSelector(user);
+  const { atWork } = useAppSelector(miner);
   const navigate = useNavigate();
   const [refresh, { isError: refreshIsError, data: refreshData }] =
     useRefreshMutation();
@@ -45,20 +48,59 @@ const App = () => {
     skip: !isAuth,
   });
   const [coinsNames] = useState(["btc", "usdt", "eth", "doge", "ton"]);
+  const { isDisconnected } = useAppSelector(main);
 
   const stopMiner = () => {
     socket.emit("stop", null);
     dispatch(setWork(false));
   };
 
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === "visible") {
+      if (!atWork) {
+        socket.connect();
+      }
+    } else {
+      if (atWork) {
+        stopMiner();
+        socket.disconnect();
+      }
+    }
+  };
+
   useEffect(() => {
-    window.addEventListener("visibilitychange", stopMiner);
+    window.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      window.removeEventListener("visibilitychange", stopMiner);
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [atWork]);
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      dispatch(setDisconnected(false));
+    });
+
+    socket.on("reconnect_attempt", () => {
+      dispatch(setDisconnected(true));
+    });
+
+    socket.on("reconnect", () => {
+      dispatch(setDisconnected(false));
+    });
+
+    socket.on("disconnect", () => {
+      dispatch(setDisconnected(true));
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("reconnect_attempt");
+      socket.off("disconnect");
+      socket.off("reconnect");
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,6 +223,8 @@ const App = () => {
         pauseOnHover
         theme={"dark"}
       />
+
+      {isDisconnected && <Disconnect />}
     </div>
   );
 };

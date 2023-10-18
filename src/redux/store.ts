@@ -4,6 +4,7 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 import userReducer from "./slices/userSlice";
 import coinsReducer from "./slices/coinsSlice";
 import minerReducer from "./slices/minerSlice";
+import mainReducer from "./slices/mainSlice";
 import { walletApi } from "./api/walletApi";
 import { optionsApi } from "./api/optionsApi";
 import { authApi } from "./api/authApi";
@@ -12,6 +13,7 @@ export const rootReducer = combineReducers({
   user: userReducer,
   coins: coinsReducer,
   miner: minerReducer,
+  main: mainReducer,
 
   [walletApi.reducerPath]: walletApi.reducer,
   [optionsApi.reducerPath]: optionsApi.reducer,
