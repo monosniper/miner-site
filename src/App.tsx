@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "./redux/store";
 import {
   setAuth,
   setBlockedMiner,
+  setSumCoins,
   setUserData,
   setWallet,
   user,
@@ -16,13 +17,22 @@ import { checkToken, getCoinData } from "./utils";
 import { useNavigate } from "react-router-dom";
 import { useGetMeQuery, useRefreshMutation } from "./redux/api/authApi";
 import { ToastContainer } from "react-toastify";
-import { useGetSettingsQuery } from "./redux/api/walletApi";
+import {
+  useGetSettingsQuery,
+  useSetBalanceMutation,
+} from "./redux/api/walletApi";
 import { setCoins } from "./redux/slices/coinsSlice";
 import socket from "./socket";
-import { miner, setWork } from "./redux/slices/minerSlice";
+import {
+  miner,
+  setPrevUpdateData,
+  setUpdateData,
+  setWork,
+} from "./redux/slices/minerSlice";
 import { Disconnect } from "./components";
 import { main, setDisconnected } from "./redux/slices/mainSlice";
 import { toast } from "react-toastify";
+import { coins as coinsSlice } from "./redux/slices/coinsSlice";
 
 const coinsFullNames: { [key: string]: string } = {
   btc: "Bitcoin",
@@ -38,8 +48,8 @@ const App = () => {
   const accessToken = params.get("accessToken");
   const refreshToken = params.get("refreshToken");
   const dispatch = useAppDispatch();
-  const { isAuth, userData, isBlockedMiner } = useAppSelector(user);
-  const { atWork } = useAppSelector(miner);
+  const { isAuth, userData, isBlockedMiner, sumCoins } = useAppSelector(user);
+  const { atWork, updateData, prevUpdateData } = useAppSelector(miner);
   const navigate = useNavigate();
   const [refresh, { isError: refreshIsError, data: refreshData }] =
     useRefreshMutation();
@@ -51,19 +61,121 @@ const App = () => {
   });
   const [coinsNames] = useState(["btc", "usdt", "eth", "doge", "ton"]);
   const { isDisconnected } = useAppSelector(main);
+  const [setBalance, { data: balanceData }] = useSetBalanceMutation();
+  const [prevFounds, setPrevFounds] = useState<
+    {
+      name: string;
+      amount: number;
+    }[]
+  >([]);
+  const { coins } = useAppSelector(coinsSlice);
+
+  const [demoTime, setDemoTime] = useState<number>();
 
   useEffect(() => {
-    if (!userData) return;
+    if (!settingsData) return;
 
-    if (userData.demo_time >= 600) {
+    const demoTimeVal = settingsData.find((el) => el.key === "demo_time");
+
+    if (demoTimeVal) setDemoTime(Number(demoTimeVal.value));
+  }, [settingsData]);
+
+  useEffect(() => {
+    if (!updateData) return;
+
+    const usdtCourse = coins.find((el) => el.name === "usdt")?.usd;
+
+    if (!usdtCourse) return;
+
+    const { founds } = updateData;
+
+    if (founds.length === 0) return;
+
+    if (prevFounds.length === founds.length) return;
+
+    setPrevFounds(founds);
+
+    const sumCoins: { [name: string]: number } = {};
+
+    const lastFound = founds[founds.length - 1];
+
+    if (atWork) {
+      sumCoins[lastFound.name.toLowerCase()] = lastFound.amount / usdtCourse;
+    }
+
+    dispatch(setSumCoins(sumCoins));
+  }, [updateData, dispatch, coins, prevFounds.length, atWork]);
+
+  useEffect(() => {
+    if (!balanceData) return;
+
+    dispatch(setUserData(balanceData));
+  }, [balanceData, dispatch]);
+
+  useEffect(() => {
+    if (!userData || !sumCoins || !atWork) return;
+
+    const balance = { ...userData.balance };
+
+    for (const coin in sumCoins) {
+      if (balance[coin]) {
+        balance[coin] += sumCoins[coin];
+      } else {
+        balance[coin] = sumCoins[coin];
+      }
+    }
+
+    let sumUsdt = 0;
+
+    for (const coin in balance) {
+      if (coin !== "usdt") {
+        sumUsdt += balance[coin];
+      }
+    }
+
+    balance["usdt"] = sumUsdt;
+
+    setBalance(balance);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sumCoins]);
+
+  useEffect(() => {
+    socket.on("update", (data) => {
+      if (prevUpdateData) {
+        dispatch(
+          setUpdateData({
+            checks: [...prevUpdateData.checks, ...data.checks],
+            founds: [...prevUpdateData.founds, ...data.founds],
+            logs: [...prevUpdateData.logs, ...data.logs],
+          })
+        );
+      } else {
+        dispatch(setUpdateData(data));
+      }
+    });
+
+    return () => {
+      socket.off("update");
+    };
+  }, [dispatch, prevUpdateData, updateData]);
+
+  useEffect(() => {
+    dispatch(setPrevUpdateData(updateData));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [atWork, dispatch]);
+
+  useEffect(() => {
+    if (!userData || !demoTime) return;
+
+    if (userData.demo_time >= demoTime && userData.status === "demo") {
       dispatch(setBlockedMiner(true));
     }
-  }, [dispatch, userData]);
+  }, [demoTime, dispatch, userData]);
 
   useEffect(() => {
     if (isBlockedMiner) {
       toast.warning(
-        "The lifetime of the demo mode has expired. To buy a miner, click Buy Pro",
+        "The lifetime of the demo mode has expired. To buy a miner, click Buy Pro"
       );
     }
   }, [isBlockedMiner]);
@@ -139,7 +251,7 @@ const App = () => {
             fullName: coinsFullNames[coin],
             ...data,
           };
-        }),
+        })
       );
 
       dispatch(setCoins(coinDataArray));
@@ -190,7 +302,7 @@ const App = () => {
       JSON.stringify({
         accessToken: refreshData.accessToken,
         refreshToken: refreshData.refreshToken,
-      }),
+      })
     );
   }, [refreshData, dispatch]);
 
@@ -198,7 +310,7 @@ const App = () => {
     const check = async () => {
       const isDeadToken = await checkToken();
       const tokens: { accessToken: string; refreshToken: string } = JSON.parse(
-        localStorage.getItem("tokens") || "{}",
+        localStorage.getItem("tokens") || "{}"
       );
 
       if (!tokens.refreshToken) {
@@ -220,7 +332,7 @@ const App = () => {
 
     localStorage.setItem(
       "tokens",
-      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken }),
+      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken })
     );
 
     navigate("/");

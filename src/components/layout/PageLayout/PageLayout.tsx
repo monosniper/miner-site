@@ -1,10 +1,11 @@
 import { Header, Menu } from "@/components";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import cn from "clsx";
 import { useAppSelector } from "@/redux/store";
 import { user } from "@/redux/slices/userSlice";
 import { toast } from "react-toastify";
+import { useGetSettingsQuery } from "@/redux/api/walletApi";
 
 type Props = {
   children: ReactNode;
@@ -13,16 +14,18 @@ type Props = {
 export const PageLayout: FC<Props> = ({ children }) => {
   const location = useLocation();
   const { userData } = useAppSelector(user);
+  const [demoTime, setDemoTime] = useState<number>();
+  const { data: settingsData } = useGetSettingsQuery(null);
 
   const showModeTime = () => {
     if (!userData) return;
 
-    const { demo_time, status } = userData;
+    const { demo_time: demoTimeUser, status } = userData;
 
-    if (status === "demo") {
-      const secondsUser = 600 - demo_time;
+    if (status === "demo" && demoTime) {
+      const secondsUser = demoTime - demoTimeUser;
 
-      if (demo_time >= 600) {
+      if (demoTimeUser >= demoTime) {
         return toast.error("There's no time left");
       }
 
@@ -40,6 +43,14 @@ export const PageLayout: FC<Props> = ({ children }) => {
       );
     }
   };
+
+  useEffect(() => {
+    if (!settingsData) return;
+
+    const demoTimeVal = settingsData.find((el) => el.key === "demo_time");
+
+    if (demoTimeVal) setDemoTime(Number(demoTimeVal.value));
+  }, [settingsData]);
 
   return (
     <div className="relative flex flex-col min-h-screen bg-none">

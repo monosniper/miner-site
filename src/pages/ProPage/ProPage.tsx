@@ -10,15 +10,21 @@ export const ProPage = () => {
   const { data: settingsData } = useGetSettingsQuery(null);
   const [supportVal, setSupportVal] = useState<string>();
   const { wallet } = useAppSelector(user);
+  const [proPrice, setProPrice] = useState(0);
+  const [standartPrice, setStandartPrice] = useState(0);
 
   useEffect(() => {
     if (!settingsData) return;
 
+    const proPriceVal = settingsData.find((el) => el.key === "pro_price");
+    const standartPriceVal = settingsData.find(
+      (el) => el.key === "default_price",
+    );
     const support = settingsData.find((el) => el.key === "support");
 
-    if (!support) return;
-
-    setSupportVal(support.value);
+    if (support) setSupportVal(support.value);
+    if (proPriceVal) setProPrice(Number(proPriceVal.value));
+    if (standartPriceVal) setStandartPrice(Number(standartPriceVal.value));
   }, [settingsData, supportVal]);
 
   return (
@@ -86,7 +92,9 @@ export const ProPage = () => {
         <p className="mb-6 hidden sm:block">Network TRC-20 (USDT)</p>
 
         <form className="flex flex-col flex-grow relative z-20 mt-6 sm:mt-0 mb-[106px] pb-5">
-          <p className="text-xl">Pro - 50$, Standart - 25$</p>
+          <p className="text-xl">
+            Pro - {proPrice}$, Standart - {standartPrice}$
+          </p>
 
           <div className="flex items-center w-full gap-6 mt-6">
             <FieldWrapper className="w-full" title="Wallet">
