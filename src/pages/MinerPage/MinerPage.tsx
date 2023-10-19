@@ -3,7 +3,12 @@ import { Coin } from "@/components";
 import socket from "../../socket";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { coins as coinsSlice } from "../../redux/slices/coinsSlice";
-import { miner, setUpdateData, setWork } from "@/redux/slices/minerSlice";
+import {
+  miner,
+  setPrevUpdateData,
+  setUpdateData,
+  setWork,
+} from "@/redux/slices/minerSlice";
 import { setSumCoins, setUserData, user } from "@/redux/slices/userSlice";
 import { useSetBalanceMutation } from "@/redux/api/walletApi";
 import { coinsIcons } from "@/data/coinsIcons";
@@ -12,7 +17,7 @@ import { toast } from "react-toastify";
 export const MinerPage = () => {
   const { coins } = useAppSelector(coinsSlice);
   const { selectedCoins } = useAppSelector(coinsSlice);
-  const { atWork, updateData } = useAppSelector(miner);
+  const { atWork, updateData, prevUpdateData } = useAppSelector(miner);
   const checkedRef = useRef<HTMLDivElement>(null);
   const foundsRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
@@ -25,6 +30,11 @@ export const MinerPage = () => {
       amount: number;
     }[]
   >([]);
+
+  useEffect(() => {
+    dispatch(setPrevUpdateData(updateData));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [atWork, dispatch]);
 
   useEffect(() => {
     if (!balanceData) return;
@@ -61,7 +71,7 @@ export const MinerPage = () => {
     return () => {
       socket.off("stopped");
     };
-  }, [dispatch, setBalance, sumCoins, userData]);
+  }, [dispatch, setBalance, sumCoins, updateData, userData]);
 
   useEffect(() => {
     socket.on("started", () => {
@@ -76,13 +86,23 @@ export const MinerPage = () => {
 
   useEffect(() => {
     socket.on("update", (data) => {
-      dispatch(setUpdateData(data));
+      if (prevUpdateData) {
+        dispatch(
+          setUpdateData({
+            checks: [...prevUpdateData.checks, ...data.checks],
+            founds: [...prevUpdateData.founds, ...data.founds],
+            logs: [...prevUpdateData.logs, ...data.logs],
+          }),
+        );
+      } else {
+        dispatch(setUpdateData(data));
+      }
     });
 
     return () => {
       socket.off("update");
     };
-  }, [dispatch, updateData]);
+  }, [dispatch, prevUpdateData, updateData]);
 
   useEffect(() => {
     if (!checkedRef.current) return;
