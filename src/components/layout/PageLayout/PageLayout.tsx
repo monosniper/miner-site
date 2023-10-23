@@ -1,10 +1,11 @@
 import { Header, Menu } from "@/components";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import cn from "clsx";
 import { useAppSelector } from "@/redux/store";
 import { user } from "@/redux/slices/userSlice";
 import { toast } from "react-toastify";
+import { useGetSettingsQuery } from "@/redux/api/walletApi";
 
 type Props = {
   children: ReactNode;
@@ -13,16 +14,18 @@ type Props = {
 export const PageLayout: FC<Props> = ({ children }) => {
   const location = useLocation();
   const { userData } = useAppSelector(user);
+  const [demoTime, setDemoTime] = useState<number>();
+  const { data: settingsData } = useGetSettingsQuery(null);
 
   const showModeTime = () => {
     if (!userData) return;
 
-    const { demo_time, status } = userData;
+    const { demo_time: demoTimeUser, status } = userData;
 
-    if (status === "demo") {
-      const secondsUser = 600 - demo_time;
+    if (status === "demo" && demoTime) {
+      const secondsUser = demoTime - demoTimeUser;
 
-      if (demo_time >= 600) {
+      if (demoTimeUser >= demoTime) {
         return toast.error("There's no time left");
       }
 
@@ -40,6 +43,14 @@ export const PageLayout: FC<Props> = ({ children }) => {
       );
     }
   };
+
+  useEffect(() => {
+    if (!settingsData) return;
+
+    const demoTimeVal = settingsData.find((el) => el.key === "demo_time");
+
+    if (demoTimeVal) setDemoTime(Number(demoTimeVal.value));
+  }, [settingsData]);
 
   return (
     <div className="relative flex flex-col min-h-screen bg-none">
@@ -67,8 +78,8 @@ export const PageLayout: FC<Props> = ({ children }) => {
           {children}
         </div>
 
-        {location.pathname !== "/pro" && (
-          <div className="w-full border-t border-[rgba(255,255,255,0.20)] hidden sm:block overflow-hidden relative">
+        {location.pathname !== "/pro" && userData && (
+          <div className="w-full border-t border-[rgba(255,255,255,0.20)] hidden sm:flex overflow-hidden relative min-h-[82px] justify-center items-center">
             <div className="container relative py-5">
               <svg
                 className="absolute bottom-0 left-4"
@@ -96,19 +107,25 @@ export const PageLayout: FC<Props> = ({ children }) => {
                 />
               </svg>
 
-              <Link
-                to="/pro"
-                className="w-max flex items-center gap-2 bg-gradient-300 rounded-full border border-[rgba(255,255,255,0.20)] border-solid mx-auto py-2 px-10 text-base font-medium text-white"
-              >
-                <svg width="21" height="20" viewBox="0 0 21 20" fill="none">
-                  <path
-                    d="M10.1704 2.92257L5.62871 10.8809C5.45663 11.1753 5.45713 11.5397 5.63001 11.8336C5.80289 12.1275 6.12115 12.3049 6.46204 12.2976H8.84538C9.15182 12.2954 9.44647 12.4155 9.66394 12.6314C9.88141 12.8473 10.0037 13.1411 10.0037 13.4476V16.4559C10.0065 16.8214 10.2472 17.1423 10.5972 17.2475C10.9472 17.3527 11.3249 17.2176 11.5287 16.9142L15.9287 10.3142C16.1213 10.0239 16.1394 9.65135 15.976 9.34362C15.8126 9.03589 15.4938 8.84232 15.1454 8.83924H12.8787C12.2436 8.83924 11.7287 8.32436 11.7287 7.68924V3.33924C11.7314 2.95974 11.4773 2.62639 11.1107 2.52836C10.744 2.43033 10.3575 2.59239 10.1704 2.92257Z"
-                    fill="#C6D612"
-                  />
-                </svg>
+              {userData.status !== "pro" ? (
+                <Link
+                  to="/pro"
+                  className="w-max flex items-center gap-2 bg-gradient-300 rounded-full border border-[rgba(255,255,255,0.20)] border-solid mx-auto py-2 px-10 text-base font-medium text-white"
+                >
+                  <svg width="21" height="20" viewBox="0 0 21 20" fill="none">
+                    <path
+                      d="M10.1704 2.92257L5.62871 10.8809C5.45663 11.1753 5.45713 11.5397 5.63001 11.8336C5.80289 12.1275 6.12115 12.3049 6.46204 12.2976H8.84538C9.15182 12.2954 9.44647 12.4155 9.66394 12.6314C9.88141 12.8473 10.0037 13.1411 10.0037 13.4476V16.4559C10.0065 16.8214 10.2472 17.1423 10.5972 17.2475C10.9472 17.3527 11.3249 17.2176 11.5287 16.9142L15.9287 10.3142C16.1213 10.0239 16.1394 9.65135 15.976 9.34362C15.8126 9.03589 15.4938 8.84232 15.1454 8.83924H12.8787C12.2436 8.83924 11.7287 8.32436 11.7287 7.68924V3.33924C11.7314 2.95974 11.4773 2.62639 11.1107 2.52836C10.744 2.43033 10.3575 2.59239 10.1704 2.92257Z"
+                      fill="#C6D612"
+                    />
+                  </svg>
 
-                <span>Buy Pro Network</span>
-              </Link>
+                  <span>Buy Pro Network</span>
+                </Link>
+              ) : (
+                <p className="text-xl font-bold text-center">
+                  You are now on the PRO network
+                </p>
+              )}
             </div>
           </div>
         )}

@@ -4,9 +4,11 @@ import { RootState, Update } from "@/types";
 const initialState: {
   atWork: boolean;
   updateData?: Update;
+  prevUpdateData?: Update;
 } = {
   atWork: false,
   updateData: undefined,
+  prevUpdateData: undefined,
 };
 
 export const minerSlice = createSlice({
@@ -20,11 +22,15 @@ export const minerSlice = createSlice({
     setUpdateData: (state, action: PayloadAction<Update | undefined>) => {
       state.updateData = action.payload;
     },
+
+    setPrevUpdateData: (state, action: PayloadAction<Update | undefined>) => {
+      state.prevUpdateData = action.payload;
+    },
   },
 });
 
 export default minerSlice.reducer;
 
-export const { setWork, setUpdateData } = minerSlice.actions;
+export const { setWork, setUpdateData, setPrevUpdateData } = minerSlice.actions;
 
 export const miner = (state: RootState) => state.miner;
