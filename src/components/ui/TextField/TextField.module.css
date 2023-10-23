@@ -1,0 +1,7 @@
+.wrapper {
+  @apply flex items-center justify-between w-full bg-base-200 px-4 py-3 rounded-lg overflow-hidden;
+}
+
+.input {
+  @apply w-full bg-transparent placeholder:text-gray-2/30 placeholder:font-medium text-white text-lg font-medium disabled:cursor-not-allowed disabled:text-white/50;
+}
