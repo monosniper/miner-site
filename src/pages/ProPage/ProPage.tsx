@@ -18,7 +18,7 @@ export const ProPage = () => {
 
     const proPriceVal = settingsData.find((el) => el.key === "pro_price");
     const standartPriceVal = settingsData.find(
-      (el) => el.key === "default_price",
+      (el) => el.key === "default_price"
     );
     const support = settingsData.find((el) => el.key === "support");
 
@@ -88,8 +88,9 @@ export const ProPage = () => {
             Network TRC-20 (USDT)
           </p>
 
-          <p className="w-max text-xl">
-            Pro - {proPrice}$, Standart - {standartPrice}$
+          <p className="text-xl max-w-full w-full">
+            Pro - {proPrice}$, Standart - {standartPrice}$, Premium Pro Lux -
+            399$
           </p>
         </div>
 
