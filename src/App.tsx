@@ -374,6 +374,8 @@ const App = () => {
       />
 
       {isDisconnected && <Disconnect />}
+
+      {/* <TechnicalWorks /> */}
     </div>
   );
 };
