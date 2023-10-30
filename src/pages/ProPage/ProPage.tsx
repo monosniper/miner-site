@@ -18,7 +18,7 @@ export const ProPage = () => {
 
     const proPriceVal = settingsData.find((el) => el.key === "pro_price");
     const standartPriceVal = settingsData.find(
-      (el) => el.key === "default_price"
+      (el) => el.key === "default_price",
     );
     const support = settingsData.find((el) => el.key === "support");
 
