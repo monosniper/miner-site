@@ -6,6 +6,7 @@ import { useAppSelector } from "@/redux/store";
 import { user } from "@/redux/slices/userSlice";
 import { toast } from "react-toastify";
 import { useGetSettingsQuery } from "@/redux/api/walletApi";
+import { useLazyGetMeQuery } from "@/redux/api/authApi";
 
 type Props = {
   children: ReactNode;
@@ -16,16 +17,19 @@ export const PageLayout: FC<Props> = ({ children }) => {
   const { userData } = useAppSelector(user);
   const [demoTime, setDemoTime] = useState<number>();
   const { data: settingsData } = useGetSettingsQuery(null);
+  const [getMe, { data: meData }] = useLazyGetMeQuery();
 
   const showModeTime = () => {
+    getMe(null);
+
     if (!userData) return;
 
     const { demo_time: demoTimeUser, status } = userData;
 
     if (status === "demo" && demoTime) {
-      const secondsUser = demoTime - demoTimeUser;
+      const secondsUser = demoTime - (meData ? meData.demo_time : demoTimeUser);
 
-      if (demoTimeUser >= demoTime) {
+      if ((meData ? meData.demo_time : demoTimeUser) >= demoTime) {
         return toast.error("There's no time left");
       }
 

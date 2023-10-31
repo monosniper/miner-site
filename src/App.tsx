@@ -29,7 +29,7 @@ import {
   setUpdateData,
   setWork,
 } from "./redux/slices/minerSlice";
-import { Disconnect, TechnicalWorks } from "./components";
+import { Disconnect } from "./components";
 import { main, setDisconnected } from "./redux/slices/mainSlice";
 import { toast } from "react-toastify";
 import { coins as coinsSlice } from "./redux/slices/coinsSlice";
@@ -375,7 +375,7 @@ const App = () => {
 
       {isDisconnected && <Disconnect />}
 
-      <TechnicalWorks />
+      {/* <TechnicalWorks /> */}
     </div>
   );
 };

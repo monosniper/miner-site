@@ -34,4 +34,4 @@ export const authApi = createApi({
   }),
 });
 
-export const { useRefreshMutation, useGetMeQuery } = authApi;
+export const { useRefreshMutation, useGetMeQuery, useLazyGetMeQuery } = authApi;
