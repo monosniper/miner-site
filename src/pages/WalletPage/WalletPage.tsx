@@ -48,9 +48,16 @@ export const WalletPage = () => {
     <div className="flex flex-col flex-grow mt-4 sm:mt-5 mb-[110px]">
       <div className="container flex flex-col flex-grow">
         <div>
-          <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl">
-            Баланс
-          </h4>
+          <div className="flex justify-between items-center flex-wrap sm:flex-col sm:justify-center">
+            <h4 className="text-2xl font-semibold sm:text-center sm:text-3xl">
+              Баланс
+            </h4>
+            {userData?.username && (
+              <p className="text-lg sm:text-center sm:text-xl">
+                {userData.username}
+              </p>
+            )}
+          </div>
           <div className="flex flex-wrap -m-2 mt-4">
             {userData?.balance ? (
               <>
