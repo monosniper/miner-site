@@ -86,6 +86,8 @@ export const MinerPage = () => {
               {coins
                 .filter((el) => el.name !== "usdt")
                 .map((el, idx) => {
+                  if (!el.usd) return;
+
                   return (
                     <div className="w-full sm:w-1/2 p-2" key={idx}>
                       <Coin

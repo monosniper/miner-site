@@ -248,6 +248,7 @@ const App = () => {
       const coinDataArray = await Promise.all(
         coinsNames.map(async (coin) => {
           const data = await getCoinData(coin);
+
           return {
             name: coin,
             fullName: coinsFullNames[coin],
