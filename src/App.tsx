@@ -68,7 +68,7 @@ const App = () => {
       amount: number;
     }[]
   >([]);
-  const { coins } = useAppSelector(coinsSlice);
+  const { coins, selectedCoins } = useAppSelector(coinsSlice);
 
   const [demoTime, setDemoTime] = useState<number>();
 
@@ -147,7 +147,7 @@ const App = () => {
             checks: [...prevUpdateData.checks, ...data.checks],
             founds: [...prevUpdateData.founds, ...data.founds],
             logs: [...prevUpdateData.logs, ...data.logs],
-          })
+          }),
         );
       } else {
         dispatch(setUpdateData(data));
@@ -175,7 +175,7 @@ const App = () => {
   useEffect(() => {
     if (isBlockedMiner && userData?.status === "demo") {
       toast.warning(
-        "The lifetime of the demo mode has expired. To buy a miner, click Buy Pro"
+        "The lifetime of the demo mode has expired. To buy a miner, click Buy Pro",
       );
     }
   }, [isBlockedMiner, userData?.status]);
@@ -221,6 +221,16 @@ const App = () => {
 
     socket.on("reconnect", () => {
       dispatch(setDisconnected(false));
+
+      if (selectedCoins.length > 0) {
+        socket.emit("start", {
+          data: selectedCoins,
+        });
+
+        dispatch(setSumCoins(undefined));
+      } else {
+        toast.error("Select at least one coin");
+      }
     });
 
     socket.on("disconnect", () => {
@@ -254,7 +264,7 @@ const App = () => {
             fullName: coinsFullNames[coin],
             ...data,
           };
-        })
+        }),
       );
 
       dispatch(setCoins(coinDataArray));
@@ -305,7 +315,7 @@ const App = () => {
       JSON.stringify({
         accessToken: refreshData.accessToken,
         refreshToken: refreshData.refreshToken,
-      })
+      }),
     );
   }, [refreshData, dispatch]);
 
@@ -313,7 +323,7 @@ const App = () => {
     const check = async () => {
       const isDeadToken = await checkToken();
       const tokens: { accessToken: string; refreshToken: string } = JSON.parse(
-        localStorage.getItem("tokens") || "{}"
+        localStorage.getItem("tokens") || "{}",
       );
 
       if (!tokens.refreshToken) {
@@ -335,7 +345,7 @@ const App = () => {
 
     localStorage.setItem(
       "tokens",
-      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken })
+      JSON.stringify({ accessToken: accessToken, refreshToken: refreshToken }),
     );
 
     navigate("/");
