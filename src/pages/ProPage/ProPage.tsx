@@ -1,6 +1,6 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
 import { useGetSettingsQuery } from "@/redux/api/walletApi";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAppSelector } from "@/redux/store";
 import { user } from "@/redux/slices/userSlice";
@@ -12,6 +12,7 @@ export const ProPage = () => {
   const { wallet } = useAppSelector(user);
   const [proPrice, setProPrice] = useState(0);
   const [standartPrice, setStandartPrice] = useState(0);
+  const location = useLocation();
 
   useEffect(() => {
     if (!settingsData) return;
@@ -64,7 +65,11 @@ export const ProPage = () => {
           <Link
             className="mt-10 inline-block"
             target="_blank"
-            to={`https://t.me/${supportVal}`}
+            to={
+              location.pathname.includes("miner777.space")
+                ? `https://t.me/helpmineres`
+                : `https://t.me/${supportVal}`
+            }
           >
             Know more
           </Link>

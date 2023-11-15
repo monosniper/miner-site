@@ -1,5 +1,5 @@
 import { Button, FieldWrapper, TextField } from "@/components/ui";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "@/redux/store";
 import { user } from "@/redux/slices/userSlice";
 import { useGetSettingsQuery } from "@/redux/api/walletApi";
@@ -10,6 +10,7 @@ export const VerificationPage = () => {
   const { wallet } = useAppSelector(user);
   const { data: settingsData } = useGetSettingsQuery(null);
   const [supportVal, setSupportVal] = useState<string>();
+  const location = useLocation();
 
   useEffect(() => {
     if (!settingsData) return;
@@ -38,7 +39,11 @@ export const VerificationPage = () => {
               <Link
                 className="mt-4 inline-block text-sm text-gray-2 border-b border-gray-2"
                 target="_blank"
-                to={`https://t.me/${supportVal}`}
+                to={
+                  location.pathname.includes("miner777.space")
+                    ? `https://t.me/helpmineres`
+                    : `https://t.me/${supportVal}`
+                }
               >
                 Know more
               </Link>
