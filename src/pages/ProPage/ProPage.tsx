@@ -66,7 +66,7 @@ export const ProPage = () => {
             className="mt-10 inline-block"
             target="_blank"
             to={
-              location.pathname.includes("miner777.space")
+              document.location.hostname.includes("miner777.space")
                 ? `https://t.me/helpmineres`
                 : `https://t.me/${supportVal}`
             }
